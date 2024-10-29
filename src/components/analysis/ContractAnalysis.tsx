@@ -38,6 +38,11 @@ const contracts: Contract[] = [
   }
 ];
 
+// Añade esta clase de utilidad en la parte superior del archivo
+const getWidthClass = (percentage: number): string => {
+  return `w-[${percentage}%]`;
+};
+
 const ContractAnalysis: React.FC = () => {
   const { isDark } = useTheme();
   
@@ -57,8 +62,9 @@ const ContractAnalysis: React.FC = () => {
             </div>
             <p className="text-sm text-slate-600 mb-2">Average Gas: {contract.gasUsage.toLocaleString()}</p>
             <div className="w-full bg-slate-200 rounded-full h-2">
-              <div className={`${contract.color} h-2 rounded-full transition-all duration-300`} 
-                   style={{ width: `${contract.percentage}%` }}></div>
+              <div 
+                className={`${contract.color} h-2 rounded-full transition-all duration-300 ${getWidthClass(contract.percentage)}`}
+              ></div>
             </div>
           </div>
         ))}
