@@ -49,5 +49,39 @@ export const gasService = {
       networkActivity: Number(row.network_activity),
       predictedLow: Number(row.predicted_low)
     }));
+  },
+
+  async getGasPriceChange(): Promise<{ changePercent: number }> {
+    const result = await db.execute({
+      sql: `WITH current_price AS (
+              SELECT price 
+              FROM gas_prices 
+              ORDER BY timestamp DESC 
+              LIMIT 1
+            ),
+            reference_price AS (
+              SELECT price
+              FROM gas_prices
+              WHERE timestamp <= datetime('now', '-1 day')
+              ORDER BY timestamp DESC
+              LIMIT 1
+            )
+            SELECT 
+              CASE 
+                WHEN rp.price IS NULL THEN (
+                  SELECT ((cp.price - first_price.price) / first_price.price * 100)
+                  FROM current_price cp,
+                       (SELECT price FROM gas_prices ORDER BY timestamp ASC LIMIT 1) first_price
+                )
+                ELSE ((cp.price - rp.price) / rp.price * 100)
+              END as change_percent
+            FROM current_price cp
+            LEFT JOIN reference_price rp ON 1=1`,
+      args: []
+    });
+
+    return {
+      changePercent: Number(result.rows[0]?.change_percent || 0)
+    };
   }
 };

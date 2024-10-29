@@ -1,7 +1,8 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { LucideIcon, TrendingUp, TrendingDown } from 'lucide-react';
 import { useTheme } from '../../hooks/useTheme';
 import { useGasPrice } from '../../hooks/useGasPrice';
+import { gasService } from '../../services/gasService';
 
 interface StatCardProps {
   title: string;
@@ -9,14 +10,6 @@ interface StatCardProps {
   subtitle: string;
   icon: LucideIcon;
   iconColor: string;
-  trend?: {
-    direction: 'up' | 'down';
-    value: string;
-  };
-  progress?: {
-    value: number;
-    color: string;
-  };
 }
 
 const StatCard: React.FC<StatCardProps> = ({
@@ -24,11 +17,34 @@ const StatCard: React.FC<StatCardProps> = ({
   value,
   subtitle,
   icon: Icon,
-  iconColor,
-  trend}) => {
+  iconColor
+}) => {
   const { isDark } = useTheme();
-  useGasPrice(1);
+  const [trend, setTrend] = useState<{ direction: 'up' | 'down', value: string } | null>(null);
 
+  useEffect(() => {
+    const fetchPriceChange = async () => {
+      try {
+        const { changePercent } = await gasService.getGasPriceChange();
+        const direction = changePercent >= 0 ? 'up' : 'down';
+        const formattedValue = `${Math.abs(changePercent).toFixed(1)}%`;
+        setTrend({ direction, value: formattedValue });
+      } catch (error) {
+        console.error('Error fetching price change:', error);
+      }
+    };
+
+    if (title === 'Current Gas') {
+      fetchPriceChange();
+    }
+  }, [title, value]);
+
+  const getLivePriceClass = () => {
+    if (title === "Current Gas") {
+      return `${isDark ? 'text-slate-400' : 'text-slate-600'} animate-pulse-slow`;
+    }
+    return isDark ? 'text-slate-400' : 'text-slate-600';
+  };
 
   return (
     <div className={`${
@@ -43,7 +59,7 @@ const StatCard: React.FC<StatCardProps> = ({
             {value}
           </h3>
           <div className="flex items-center space-x-2">
-            <span className={`text-xs ${isDark ? 'text-slate-400' : 'text-slate-500'}`}>
+            <span className={`text-xs ${title === "Current Gas" ? "animate-pulse-slow" : ""} ${isDark ? 'text-slate-400' : 'text-slate-600'}`}>
               {subtitle}
             </span>
             {trend && (
@@ -52,7 +68,10 @@ const StatCard: React.FC<StatCardProps> = ({
                   ? isDark ? 'text-red-400' : 'text-red-600'
                   : isDark ? 'text-emerald-400' : 'text-emerald-600'
               }`}>
-                {trend.direction === 'up' ? <TrendingUp className="w-3 h-3 mr-1" /> : <TrendingDown className="w-3 h-3 mr-1" />}
+                {trend.direction === 'up' ? 
+                  <TrendingUp className="w-3 h-3 mr-1" /> : 
+                  <TrendingDown className="w-3 h-3 mr-1" />
+                }
                 {trend.value}
               </span>
             )}
