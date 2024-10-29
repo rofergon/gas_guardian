@@ -3,14 +3,22 @@ import { Bell, Plus, Trash2, AlertTriangle } from 'lucide-react';
 import { useAlerts } from '../../hooks/useAlerts';
 import { useTheme } from '../../hooks/useTheme';
 
+type AlertType = 'below' | 'above';
+
+interface NewAlertState {
+  name: string;
+  threshold: number;
+  type: AlertType;
+}
+
 export const CustomAlerts: React.FC = () => {
   const { isDark } = useTheme();
   const { alerts, createAlert, deleteAlert, toggleAlert } = useAlerts();
   const [isAddingAlert, setIsAddingAlert] = useState(false);
-  const [newAlert, setNewAlert] = useState({
+  const [newAlert, setNewAlert] = useState<NewAlertState>({
     name: '',
     threshold: 30,
-    type: 'below' as const
+    type: 'below'
   });
 
   const handleAddAlert = async (e: React.FormEvent) => {
@@ -126,7 +134,7 @@ export const CustomAlerts: React.FC = () => {
                 value={newAlert.type}
                 onChange={e => setNewAlert(prev => ({ 
                   ...prev, 
-                  type: e.target.value as 'below' | 'above'
+                  type: e.target.value as AlertType
                 }))}
                 className="w-full px-3 py-2 rounded-lg bg-slate-800 border border-slate-700"
                 required

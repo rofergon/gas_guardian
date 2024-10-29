@@ -1,5 +1,13 @@
 import { useState } from 'react';
 import { ContractService } from '../services/ContractService';
+import { ethers } from 'ethers';
+
+interface SmartContract {
+  address: string;
+  name: string;
+  averageGas: number;
+  efficiency: 'Efficient' | 'Moderate' | 'High';
+}
 
 const contractService = new ContractService();
 

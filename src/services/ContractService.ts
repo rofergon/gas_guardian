@@ -1,5 +1,12 @@
 import { ethers } from 'ethers';
 
+interface SmartContract {
+  address: string;
+  name: string;
+  averageGas: number;
+  efficiency: string;
+}
+
 export class ContractService {
   private provider: ethers.JsonRpcProvider;
   private contracts: SmartContract[] = [];
@@ -22,7 +29,7 @@ export class ContractService {
         to: address,
         data: '0x70a08231' // Ejemplo de llamada a balanceOf
       });
-      return gasEstimate.toNumber();
+      return Number(gasEstimate);
     } catch (error) {
       console.error('Error estimating gas:', error);
       return 0;
