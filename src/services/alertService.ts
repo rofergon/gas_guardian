@@ -4,10 +4,10 @@ import { GasAlert, AlertNotification } from '../types/Alert';
 export const alertService = {
   async createAlert(alert: Omit<GasAlert, 'id' | 'createdAt'>) {
     const result = await db.execute({
-      sql: `INSERT INTO gas_alerts (name, enabled, threshold, type)
+      sql: `INSERT INTO gas_alerts (name, threshold, type, enabled)
             VALUES (?, ?, ?, ?)
             RETURNING id`,
-      args: [alert.name, alert.enabled ? 1 : 0, alert.threshold, alert.type]
+      args: [alert.name, alert.threshold, alert.type, alert.enabled ? 1 : 0]
     });
     
     return result.rows[0].id as string;
@@ -85,5 +85,12 @@ export const alertService = {
       id: result.rows[0].id as string,
       ...notification
     };
+  },
+
+  async deleteAlert(id: string) {
+    await db.execute({
+      sql: `DELETE FROM gas_alerts WHERE id = ?`,
+      args: [id]
+    });
   }
 };

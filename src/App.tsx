@@ -3,7 +3,7 @@ import Header from './components/layout/Header';
 import StatCard from './components/dashboard/StatCard';
 import GasChart from './components/dashboard/GasChart';
 import PredictionCard from './components/predictions/PredictionCard';
-import AlertsPanel from './components/alerts/AlertsPanel';
+import { CustomAlerts } from './components/alerts/CustomAlerts';
 import ContractAnalysis from './components/analysis/ContractAnalysis';
 import { useGasData } from './hooks/useGasData';
 import { useTheme } from './hooks/useTheme';
@@ -72,7 +72,7 @@ function App() {
 
           <div className="lg:col-span-4 space-y-6">
             <PredictionCard predictedDrop={15} optimalTime="2:00 AM" />
-            <AlertsPanel />
+            <CustomAlerts />
           </div>
         </div>
       </main>

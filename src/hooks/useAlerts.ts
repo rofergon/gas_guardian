@@ -1,10 +1,9 @@
 import { useState, useEffect } from 'react';
-import { GasAlert, AlertNotification } from '../types/Alert';
+import { GasAlert } from '../types/Alert';
 import { alertService } from '../services/alertService';
 
 export const useAlerts = () => {
   const [alerts, setAlerts] = useState<GasAlert[]>([]);
-  const [notifications] = useState<AlertNotification[]>([]);
   const [loading, setLoading] = useState(true);
 
   const loadAlerts = async () => {
@@ -25,6 +24,15 @@ export const useAlerts = () => {
     }
   };
 
+  const deleteAlert = async (id: string) => {
+    try {
+      await alertService.deleteAlert(id);
+      await loadAlerts();
+    } catch (error) {
+      console.error('Error deleting alert:', error);
+    }
+  };
+
   const toggleAlert = async (id: string, enabled: boolean) => {
     try {
       await alertService.toggleAlert(id, enabled);
@@ -40,9 +48,9 @@ export const useAlerts = () => {
 
   return {
     alerts,
-    notifications,
     loading,
     createAlert,
+    deleteAlert,
     toggleAlert,
     reloadAlerts: loadAlerts
   };
