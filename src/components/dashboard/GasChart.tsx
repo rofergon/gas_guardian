@@ -69,7 +69,7 @@ const GasChart: React.FC<GasChartProps> = ({ data }) => {
 
   if (!data || data.length === 0) {
     return (
-      <div className="flex items-center justify-center h-[300px]">
+      <div className="flex items-center justify-center h-[400px]">
         <p className={`text-${isDark ? 'slate-400' : 'slate-600'}`}>
           Loading gas data...
         </p>
@@ -79,7 +79,7 @@ const GasChart: React.FC<GasChartProps> = ({ data }) => {
 
   return (
     <div className="relative">
-      <ResponsiveContainer width="100%" height={300}>
+      <ResponsiveContainer width="100%" height={400}>
         <LineChart
           data={data}
           margin={{ top: 20, right: 30, left: 20, bottom: 5 }}
