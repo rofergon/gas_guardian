@@ -1,3 +1,14 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+:root {
+  --card-bg: rgba(255, 255, 255, 0.95);
+  --border-color: rgba(226, 232, 240, 0.5);
+  --hover-bg: rgba(241, 245, 249, 0.8);
+}
+
+body {
+  @apply bg-slate-50;
+  background-image: radial-gradient(circle at center, rgba(255, 255, 255, 0.9), rgba(241, 245, 249, 1));
+}

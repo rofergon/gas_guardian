@@ -27,22 +27,22 @@ const StatCard: React.FC<StatCardProps> = ({
   progress
 }) => {
   return (
-    <div className="bg-slate-800/50 backdrop-blur-sm p-4 lg:p-6 rounded-xl border border-slate-700/50 hover:bg-slate-700/30 transition-colors">
+    <div className="bg-white/95 backdrop-blur-sm p-6 rounded-xl border border-slate-200/50 hover:bg-slate-50/90 transition-colors shadow-sm">
       <div className="flex items-start justify-between">
-        <div>
-          <p className="text-sm text-slate-400">{title}</p>
-          <h3 className="text-2xl font-bold mt-1">{value}</h3>
-          <div className="flex items-center mt-2 space-x-2">
-            <span className="text-xs text-slate-400">{subtitle}</span>
+        <div className="space-y-2">
+          <p className="text-sm text-slate-600">{title}</p>
+          <h3 className="text-2xl font-semibold text-slate-900">{value}</h3>
+          <div className="flex items-center space-x-2">
+            <span className="text-xs text-slate-500">{subtitle}</span>
             {trend && (
-              <span className={`flex items-center text-xs ${trend.direction === 'up' ? 'text-red-400' : 'text-green-400'}`}>
+              <span className={`flex items-center text-xs ${trend.direction === 'up' ? 'text-red-600' : 'text-emerald-600'}`}>
                 {trend.direction === 'up' ? <TrendingUp className="w-3 h-3 mr-1" /> : <TrendingDown className="w-3 h-3 mr-1" />}
                 {trend.value}
               </span>
             )}
           </div>
           {progress && (
-            <div className="mt-3 w-full bg-slate-600 rounded-full h-2">
+            <div className="mt-3 w-full bg-slate-100 rounded-full h-2">
               <div 
                 className={`${progress.color} h-2 rounded-full transition-all duration-500 ease-in-out`} 
                 style={{ width: `${progress.value}%` }}

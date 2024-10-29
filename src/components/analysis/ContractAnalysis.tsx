@@ -42,36 +42,37 @@ const ContractAnalysis: React.FC = () => {
     <div className="space-y-6">
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
         {contracts.map((contract, index) => (
-          <div key={index} className="bg-slate-700/30 p-4 rounded-lg">
+          <div key={index} className="bg-slate-100 p-4 rounded-lg border border-slate-200">
             <div className="flex items-center justify-between mb-3">
               <div className="flex items-center">
                 <Code2 className={`w-5 h-5 ${contract.color.replace('bg-', 'text-')} mr-2`} />
-                <h3 className="font-semibold">{contract.name}</h3>
+                <h3 className="font-semibold text-slate-900">{contract.name}</h3>
               </div>
-              <span className={`${contract.statusColor} text-sm`}>{contract.status}</span>
+              <span className={`${contract.statusColor} text-sm font-medium`}>{contract.status}</span>
             </div>
-            <p className="text-sm text-slate-300 mb-2">Average Gas: {contract.gasUsage.toLocaleString()}</p>
-            <div className="w-full bg-slate-600 rounded-full h-2">
-              <div className={`${contract.color} h-2 rounded-full`} style={{ width: `${contract.percentage}%` }}></div>
+            <p className="text-sm text-slate-600 mb-2">Average Gas: {contract.gasUsage.toLocaleString()}</p>
+            <div className="w-full bg-slate-200 rounded-full h-2">
+              <div className={`${contract.color} h-2 rounded-full transition-all duration-300`} 
+                   style={{ width: `${contract.percentage}%` }}></div>
             </div>
           </div>
         ))}
       </div>
 
-      <div className="bg-slate-700/30 p-4 rounded-lg">
-        <h3 className="font-semibold mb-3">Optimization Suggestions</h3>
+      <div className="bg-slate-100 p-4 rounded-lg border border-slate-200">
+        <h3 className="font-semibold text-slate-900 mb-3">Optimization Suggestions</h3>
         <div className="space-y-2">
           <div className="flex items-start">
             <TrendingDown className="w-4 h-4 text-green-500 mt-1 mr-2 flex-shrink-0" />
-            <p className="text-sm text-slate-300">Consider using Uniswap V3 for token swaps as it's 40% more gas efficient than alternatives.</p>
+            <p className="text-sm text-slate-600">Consider using Uniswap V3 for token swaps as it's 40% more gas efficient than alternatives.</p>
           </div>
           <div className="flex items-start">
             <TrendingDown className="w-4 h-4 text-green-500 mt-1 mr-2 flex-shrink-0" />
-            <p className="text-sm text-slate-300">Batch multiple NFT transactions to save up to 25% on gas fees.</p>
+            <p className="text-sm text-slate-600">Batch multiple NFT transactions to save up to 25% on gas fees.</p>
           </div>
           <div className="flex items-start">
             <AlertTriangle className="w-4 h-4 text-yellow-500 mt-1 mr-2 flex-shrink-0" />
-            <p className="text-sm text-slate-300">Your custom contract shows high gas usage. Consider implementing ERC721A for NFT minting to reduce costs.</p>
+            <p className="text-sm text-slate-600">Your custom contract shows high gas usage. Consider implementing ERC721A for NFT minting to reduce costs.</p>
           </div>
         </div>
       </div>

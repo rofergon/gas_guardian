@@ -22,26 +22,26 @@ const AlertsPanel: React.FC = () => {
   };
 
   return (
-    <div className="bg-slate-800/50 backdrop-blur-sm p-6 rounded-xl border border-slate-700/50">
+    <div className="bg-slate-100 rounded-xl p-4">
       <div className="flex items-center justify-between mb-4">
         <div className="flex items-center space-x-2">
-          <h2 className="text-xl font-bold">Custom Alerts</h2>
-          <span className="bg-blue-500/10 text-blue-500 text-xs px-2 py-1 rounded-full">
-            2 Active
+          <h3 className="text-lg font-semibold text-slate-900">Custom Alerts</h3>
+          <span className="bg-blue-100 text-blue-600 text-xs px-2 py-0.5 rounded-full">
+            {alerts.filter(a => a.enabled).length} Active
           </span>
         </div>
-        <Bell className="w-5 h-5 text-yellow-500" />
+        <Bell className="w-5 h-5 text-blue-500" />
       </div>
 
-      <div className="space-y-4">
+      <div className="space-y-3">
         {alerts.map(alert => (
-          <div key={alert.id} className="flex items-center justify-between p-3 bg-slate-700/30 rounded-lg">
+          <div key={alert.id} className="flex items-center justify-between p-3 bg-white rounded-lg">
             <div className="flex items-center space-x-3">
-              <AlertTriangle className={`w-4 h-4 ${alert.enabled ? 'text-yellow-500' : 'text-slate-500'}`} />
+              <AlertTriangle className={`w-4 h-4 ${alert.enabled ? 'text-blue-500' : 'text-slate-400'}`} />
               <div>
-                <span className="text-sm font-medium">{alert.name}</span>
+                <span className="text-sm font-medium text-slate-900">{alert.name}</span>
                 {alert.threshold && (
-                  <p className="text-xs text-slate-400">Threshold: {alert.threshold} Gwei</p>
+                  <p className="text-xs text-slate-500">Threshold: {alert.threshold} Gwei</p>
                 )}
               </div>
             </div>
@@ -52,13 +52,13 @@ const AlertsPanel: React.FC = () => {
                 checked={alert.enabled}
                 onChange={() => toggleAlert(alert.id)}
               />
-              <div className="w-11 h-6 bg-slate-600 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-800 rounded-full peer peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:start-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-blue-500"></div>
+              <div className="w-11 h-6 bg-slate-200 peer-checked:bg-blue-500 rounded-full peer-checked:after:translate-x-full after:content-[''] after:absolute after:top-[2px] after:start-[2px] after:bg-white after:rounded-full after:h-5 after:w-5 after:transition-all"></div>
             </label>
           </div>
         ))}
       </div>
 
-      <button className="mt-4 w-full py-2 px-4 bg-blue-500/10 hover:bg-blue-500/20 text-blue-500 rounded-lg transition-colors text-sm font-medium">
+      <button className="mt-4 w-full py-2 bg-blue-50 hover:bg-blue-100 text-blue-600 rounded-lg transition-colors text-sm font-medium">
         Add New Alert
       </button>
     </div>

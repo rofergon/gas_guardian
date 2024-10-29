@@ -20,24 +20,28 @@ const GasChart: React.FC<GasChartProps> = ({ data }) => {
   }
 
   return (
-    <div className="h-[300px]">
+    <div className="h-[300px] bg-slate-100 rounded-xl p-4">
       <ResponsiveContainer width="100%" height="100%">
         <LineChart data={data}>
-          <CartesianGrid strokeDasharray="3 3" className="opacity-30" />
+          <CartesianGrid strokeDasharray="3 3" stroke="rgba(148, 163, 184, 0.1)" />
           <XAxis 
             dataKey="time" 
-            stroke="#94a3b8"
+            stroke="rgba(71, 85, 105, 0.8)"
             fontSize={12}
+            tickLine={false}
           />
           <YAxis 
-            stroke="#94a3b8"
+            stroke="rgba(71, 85, 105, 0.8)"
             fontSize={12}
+            tickLine={false}
+            axisLine={false}
           />
           <Tooltip 
             contentStyle={{ 
-              backgroundColor: '#1e293b',
-              border: '1px solid #475569',
-              borderRadius: '0.5rem'
+              backgroundColor: 'white',
+              border: '1px solid rgba(203, 213, 225, 1)',
+              borderRadius: '0.5rem',
+              padding: '8px'
             }}
           />
           <Line 
