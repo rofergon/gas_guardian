@@ -70,7 +70,6 @@ function App() {
             </div>
 
             <div className={`${isDark ? 'bg-slate-800/50' : 'bg-white'} backdrop-blur-sm p-6 rounded-xl ${isDark ? 'border-slate-700/50' : 'border-slate-200'} border shadow-lg`}>
-              <h2 className="text-xl font-bold mb-6">Smart Contract Analysis</h2>
               <ContractAnalysis />
             </div>
           </div>
