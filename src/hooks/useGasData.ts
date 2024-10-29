@@ -1,38 +1,43 @@
 import { useState, useEffect } from 'react';
 import { GasData } from '../types';
+import { useGasPrice } from './useGasPrice';
 
 export const useGasData = () => {
-  const [currentGwei, setCurrentGwei] = useState(45);
-  const [predictedLow, setPredictedLow] = useState(30);
   const [gasData, setGasData] = useState<GasData[]>([]);
-  const [networkActivity, setNetworkActivity] = useState(69);
+  const { gasPrice, isLoading } = useGasPrice(1);
+
+  const formatGasPrice = (price: string | null): number => {
+    if (!price) return 0;
+    try {
+      const cleanHex = price.startsWith('0x') ? price : `0x${price}`;
+      const priceInWei = BigInt(cleanHex);
+      return Number(priceInWei) / 1e9;
+    } catch (error) {
+      console.error('Error formatting gas price:', error);
+      return 0;
+    }
+  };
 
   useEffect(() => {
-    const generateInitialData = (): GasData[] => {
-      return Array.from({ length: 24 }, (_, i) => ({
-        time: `${i.toString().padStart(2, '0')}:00`,
-        price: Math.floor(Math.random() * (100 - 20) + 20)
-      }));
-    };
+    if (!isLoading && gasPrice) {
+      const currentPrice = formatGasPrice(gasPrice);
+      const currentTime = new Date().toLocaleTimeString();
 
-    setGasData(generateInitialData());
+      setGasData(prev => {
+        // Mantener solo las últimas 24 lecturas
+        const newData = [...prev, { time: currentTime, price: currentPrice }];
+        if (newData.length > 24) {
+          return newData.slice(-24);
+        }
+        return newData;
+      });
+    }
+  }, [gasPrice, isLoading]);
 
-    const interval = setInterval(() => {
-      const newPrice = Math.floor(Math.random() * (100 - 20) + 20);
-      const newActivity = Math.floor(Math.random() * (100 - 30) + 30);
-      
-      setCurrentGwei(newPrice);
-      setPredictedLow(Math.floor(newPrice * 0.7));
-      setNetworkActivity(newActivity);
-      
-      setGasData(prev => [
-        ...prev.slice(1),
-        { time: new Date().toLocaleTimeString(), price: newPrice }
-      ]);
-    }, 5000);
-
-    return () => clearInterval(interval);
-  }, []);
-
-  return { currentGwei, predictedLow, gasData, networkActivity };
+  return {
+    currentGwei: formatGasPrice(gasPrice),
+    predictedLow: formatGasPrice(gasPrice) * 0.85, // Estimación simple
+    gasData,
+    networkActivity: Math.min(100, Math.floor(formatGasPrice(gasPrice) / 2))
+  };
 };

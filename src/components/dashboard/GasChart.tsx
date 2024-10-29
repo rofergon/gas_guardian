@@ -11,6 +11,26 @@ interface GasChartProps {
 const GasChart: React.FC<GasChartProps> = ({ data }) => {
   const { isDark } = useTheme();
 
+  const CustomTooltip = ({ active, payload, label }: any) => {
+    if (active && payload && payload.length) {
+      return (
+        <div className={`${
+          isDark ? 'bg-slate-800' : 'bg-white'
+        } p-2 rounded-lg border ${
+          isDark ? 'border-slate-700' : 'border-slate-200'
+        } shadow-lg`}>
+          <p className={`text-sm font-medium ${isDark ? 'text-white' : 'text-slate-900'}`}>
+            {label}
+          </p>
+          <p className={`text-sm ${isDark ? 'text-blue-400' : 'text-blue-600'}`}>
+            {`${payload[0].value.toFixed(2)} Gwei`}
+          </p>
+        </div>
+      );
+    }
+    return null;
+  };
+
   if (data.length === 0) {
     return (
       <div className="relative h-[300px]">
@@ -23,9 +43,7 @@ const GasChart: React.FC<GasChartProps> = ({ data }) => {
   }
 
   return (
-    <div className={`h-[300px] ${
-      isDark ? 'bg-slate-800/50' : 'bg-slate-100'
-    } rounded-xl p-4`}>
+    <div className="h-[300px]">
       <ResponsiveContainer width="100%" height="100%">
         <LineChart data={data}>
           <CartesianGrid 
@@ -43,22 +61,16 @@ const GasChart: React.FC<GasChartProps> = ({ data }) => {
             fontSize={12}
             tickLine={false}
             axisLine={false}
+            domain={['auto', 'auto']}
           />
-          <Tooltip 
-            contentStyle={{ 
-              backgroundColor: isDark ? '#1e293b' : 'white',
-              border: isDark ? '1px solid rgba(148, 163, 184, 0.2)' : '1px solid rgba(203, 213, 225, 1)',
-              borderRadius: '0.5rem',
-              padding: '8px',
-              color: isDark ? 'white' : 'black'
-            }}
-          />
+          <Tooltip content={<CustomTooltip />} />
           <Line 
             type="monotone" 
             dataKey="price" 
             stroke={isDark ? '#60a5fa' : '#3b82f6'}
             strokeWidth={2}
             dot={false}
+            animateNewValues={true}
           />
         </LineChart>
       </ResponsiveContainer>
