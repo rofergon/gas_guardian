@@ -3,7 +3,11 @@ import { useState, useEffect } from 'react';
 interface GasPriceResponse {
   jsonrpc: string;
   id: number;
-  result: string;
+  result?: string;
+  error?: {
+    message: string;
+    code: number;
+  };
 }
 
 export const useGasPrice = (chainId: number = 1) => {
@@ -27,7 +31,7 @@ export const useGasPrice = (chainId: number = 1) => {
           })
         });
 
-        const data = await response.json();
+        const data: GasPriceResponse = await response.json();
         console.log('API Response:', data);
 
         if (data.error) {

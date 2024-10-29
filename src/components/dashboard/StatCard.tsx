@@ -5,6 +5,7 @@ import { useGasPrice } from '../../hooks/useGasPrice';
 
 interface StatCardProps {
   title: string;
+  value: string;
   subtitle: string;
   icon: LucideIcon;
   iconColor: string;
@@ -20,30 +21,14 @@ interface StatCardProps {
 
 const StatCard: React.FC<StatCardProps> = ({
   title,
+  value,
   subtitle,
   icon: Icon,
   iconColor,
-  trend,
-  progress
-}) => {
+  trend}) => {
   const { isDark } = useTheme();
-  const { gasPrice, isLoading } = useGasPrice(1);
+  useGasPrice(1);
 
-  const formatGasPrice = (price: string | null): string => {
-    if (!price) return '0';
-    try {
-      const cleanHex = price.startsWith('0x') ? price : `0x${price}`;
-      const priceInWei = BigInt(cleanHex);
-      const priceInGwei = Number(priceInWei) / 1e9;
-      return new Intl.NumberFormat('en-US', {
-        maximumFractionDigits: 2,
-        minimumFractionDigits: 2
-      }).format(priceInGwei);
-    } catch (error) {
-      console.error('Error formatting gas price:', error);
-      return '0';
-    }
-  };
 
   return (
     <div className={`${
@@ -55,7 +40,7 @@ const StatCard: React.FC<StatCardProps> = ({
         <div className="space-y-2">
           <p className={`text-sm ${isDark ? 'text-slate-400' : 'text-slate-600'}`}>{title}</p>
           <h3 className={`text-2xl font-semibold ${isDark ? 'text-white' : 'text-slate-900'}`}>
-            {isLoading ? 'Loading...' : `${formatGasPrice(gasPrice)} Gwei`}
+            {value}
           </h3>
           <div className="flex items-center space-x-2">
             <span className={`text-xs ${isDark ? 'text-slate-400' : 'text-slate-500'}`}>

@@ -3,27 +3,36 @@ import { Activity } from 'lucide-react';
 import { GasData } from '../../types';
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
 import { useTheme } from '../../hooks/useTheme';
+import { TooltipProps } from 'recharts';
+import { NameType, ValueType } from 'recharts/types/component/DefaultTooltipContent';
 
 interface GasChartProps {
   data: GasData[];
 }
 
+
 const GasChart: React.FC<GasChartProps> = ({ data }) => {
   const { isDark } = useTheme();
 
-  const CustomTooltip = ({ active, payload, label }: any) => {
-    if (active && payload && payload.length) {
+  const CustomTooltip = ({ 
+    active, 
+    payload, 
+    label 
+  }: TooltipProps<ValueType, NameType>) => {
+    if (active && payload?.[0]?.value) {
+      const value = payload[0].value as number;
       return (
-        <div className={`${
-          isDark ? 'bg-slate-800' : 'bg-white'
-        } p-2 rounded-lg border ${
-          isDark ? 'border-slate-700' : 'border-slate-200'
-        } shadow-lg`}>
+        <div className={`
+          ${isDark ? 'bg-slate-800' : 'bg-white'}
+          p-2 rounded-lg shadow-lg
+          ${isDark ? 'border-slate-700' : 'border-slate-200'}
+          border
+        `}>
           <p className={`text-sm font-medium ${isDark ? 'text-white' : 'text-slate-900'}`}>
             {label}
           </p>
           <p className={`text-sm ${isDark ? 'text-blue-400' : 'text-blue-600'}`}>
-            {`${payload[0].value.toFixed(2)} Gwei`}
+            {`${value.toFixed(2)} Gwei`}
           </p>
         </div>
       );
