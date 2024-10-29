@@ -1,7 +1,9 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 import { useState, useEffect } from 'react';
 import { GasData } from '../types';
 import { useGasPrice } from './useGasPrice';
 import { db } from '../lib/db';
+import { alertService } from '../services/alertService';
 
 export const useGasData = () => {
   const [gasData, setGasData] = useState<GasData[]>([]);
@@ -64,6 +66,12 @@ export const useGasData = () => {
   useEffect(() => {
     if (!isLoading && gasPrice) {
       const currentPrice = formatGasPrice(gasPrice);
+      
+      // Verificar alertas
+      alertService.checkAlerts(currentPrice).catch(error => {
+        console.error('Error checking alerts:', error);
+      });
+
       const networkActivity = Math.min(100, Math.floor(currentPrice / 2));
       const predictedLow = parseFloat((currentPrice * 0.85).toFixed(9));
 

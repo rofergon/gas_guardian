@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { LucideIcon, TrendingUp, TrendingDown } from 'lucide-react';
 import { useTheme } from '../../hooks/useTheme';
-import { useGasPrice } from '../../hooks/useGasPrice';
 import { gasService } from '../../services/gasService';
 
 interface StatCardProps {
@@ -39,12 +38,6 @@ const StatCard: React.FC<StatCardProps> = ({
     }
   }, [title, value]);
 
-  const getLivePriceClass = () => {
-    if (title === "Current Gas") {
-      return `${isDark ? 'text-slate-400' : 'text-slate-600'} animate-pulse-slow`;
-    }
-    return isDark ? 'text-slate-400' : 'text-slate-600';
-  };
 
   return (
     <div className={`${

@@ -1,5 +1,6 @@
 import { db } from '../lib/db';
 import { GasData } from '../types';
+import { format } from 'date-fns';
 
 export const gasService = {
   async saveGasPrice(price: number, networkActivity: number, predictedLow: number) {
@@ -13,17 +14,18 @@ export const gasService = {
   async getLastDayPrices(): Promise<GasData[]> {
     const result = await db.execute({
       sql: `SELECT 
-              strftime('%H:%M', timestamp) as time,
+              datetime(timestamp, 'localtime') as time,
               price,
               network_activity,
               predicted_low
             FROM gas_prices 
             WHERE timestamp >= datetime('now', '-1 day')
-            ORDER BY timestamp ASC`
+            ORDER BY timestamp ASC`,
+      args: []
     });
 
     return result.rows.map(row => ({
-      time: row.time as string,
+      time: format(new Date(row.time as string), 'HH:mm'),
       price: Number(row.price),
       networkActivity: Number(row.network_activity),
       predictedLow: Number(row.predicted_low)
@@ -33,18 +35,19 @@ export const gasService = {
   async getLastWeekPrices(): Promise<GasData[]> {
     const result = await db.execute({
       sql: `SELECT 
-              strftime('%Y-%m-%d %H:%M', timestamp) as time,
+              datetime(timestamp, 'localtime') as time,
               AVG(price) as price,
               AVG(network_activity) as network_activity,
               AVG(predicted_low) as predicted_low
             FROM gas_prices 
             WHERE timestamp >= datetime('now', '-7 day')
             GROUP BY strftime('%Y-%m-%d %H', timestamp)
-            ORDER BY timestamp ASC`
+            ORDER BY timestamp ASC`,
+      args: []
     });
 
     return result.rows.map(row => ({
-      time: row.time as string,
+      time: format(new Date(row.time as string), 'HH:mm'),
       price: Number(row.price),
       networkActivity: Number(row.network_activity),
       predictedLow: Number(row.predicted_low)
@@ -83,5 +86,20 @@ export const gasService = {
     return {
       changePercent: Number(result.rows[0]?.change_percent || 0)
     };
+  },
+
+  async deleteInvalidData() {
+    await db.execute({
+      sql: `DELETE FROM gas_prices 
+            WHERE timestamp >= datetime('2024-01-24 16:40:00')
+            AND timestamp <= datetime('2024-01-24 16:53:00')
+            AND price = (
+              SELECT price 
+              FROM gas_prices 
+              WHERE timestamp >= datetime('2024-01-24 16:40:00') 
+              LIMIT 1
+            )`,
+      args: []
+    });
   }
 };

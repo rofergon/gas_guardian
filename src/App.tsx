@@ -26,7 +26,6 @@ function App() {
             subtitle="Live price"
             icon={Activity}
             iconColor={isDark ? "text-green-500" : "text-green-600"}
-            trend={{ value: '+12%', direction: 'up' }}
           />
           <StatCard
             title="Predicted Low"
@@ -34,7 +33,7 @@ function App() {
             subtitle="Next 2 hours"
             icon={Clock}
             iconColor={isDark ? "text-blue-500" : "text-blue-600"}
-            trend={{ value: '-15%', direction: 'down' }}
+            
           />
           <StatCard
             title="Network Activity"
@@ -42,10 +41,7 @@ function App() {
             subtitle="Current load"
             icon={Activity}
             iconColor={isDark ? "text-purple-500" : "text-purple-600"}
-            progress={{
-              value: networkActivity,
-              color: networkActivity > 80 ? 'bg-red-500' : networkActivity > 50 ? 'bg-yellow-500' : 'bg-green-500'
-            }}
+            
           />
         </div>
 
