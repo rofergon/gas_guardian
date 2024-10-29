@@ -1,21 +1,11 @@
-import { useState, useEffect } from 'react';
+import { create } from 'zustand';
 
-export const useTheme = () => {
-  const [isDark, setIsDark] = useState(true);
+interface ThemeStore {
+  isDark: boolean;
+  toggleTheme: () => void;
+}
 
-  const toggleTheme = () => {
-    setIsDark(!isDark);
-    localStorage.setItem('theme', !isDark ? 'dark' : 'light');
-  };
-
-  useEffect(() => {
-    const savedTheme = localStorage.getItem('theme');
-    if (savedTheme) {
-      setIsDark(savedTheme === 'dark');
-    } else {
-      setIsDark(window.matchMedia('(prefers-color-scheme: dark)').matches);
-    }
-  }, []);
-
-  return { isDark, toggleTheme };
-};
+export const useTheme = create<ThemeStore>((set) => ({
+  isDark: false,
+  toggleTheme: () => set((state) => ({ isDark: !state.isDark })),
+}));

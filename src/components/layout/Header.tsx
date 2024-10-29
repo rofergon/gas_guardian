@@ -15,15 +15,24 @@ const Header: React.FC = () => {
           </div>
           <div className="flex items-center space-x-4">
             <button 
+              type="button"
               onClick={toggleTheme}
               className={`p-2 rounded-lg ${isDark ? 'hover:bg-slate-700/50' : 'hover:bg-slate-200'} transition-colors`}
             >
               {isDark ? <Sun className="w-5 h-5" /> : <Moon className="w-5 h-5" />}
             </button>
-            <button className={`p-2 rounded-lg ${isDark ? 'hover:bg-slate-700/50' : 'hover:bg-slate-200'} transition-colors`}>
+            <button 
+              type="button"
+              aria-label="Notifications"
+              className={`p-2 rounded-lg ${isDark ? 'hover:bg-slate-700/50' : 'hover:bg-slate-200'} transition-colors`}
+            >
               <Bell className="w-5 h-5" />
             </button>
-            <button className={`p-2 rounded-lg ${isDark ? 'hover:bg-slate-700/50' : 'hover:bg-slate-200'} transition-colors`}>
+            <button 
+              type="button" 
+              aria-label="Settings"
+              className={`p-2 rounded-lg ${isDark ? 'hover:bg-slate-700/50' : 'hover:bg-slate-200'} transition-colors`}
+            >
               <Settings className="w-5 h-5" />
             </button>
           </div>

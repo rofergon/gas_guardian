@@ -1,5 +1,6 @@
 import React from 'react';
 import { Code2, TrendingDown, AlertTriangle } from 'lucide-react';
+import { useTheme } from '../../hooks/useTheme';
 
 interface Contract {
   name: string;
@@ -38,11 +39,15 @@ const contracts: Contract[] = [
 ];
 
 const ContractAnalysis: React.FC = () => {
+  const { isDark } = useTheme();
+  
   return (
     <div className="space-y-6">
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
         {contracts.map((contract, index) => (
-          <div key={index} className="bg-slate-100 p-4 rounded-lg border border-slate-200">
+          <div key={index} className={`${
+            isDark ? 'bg-slate-800/50 border-slate-700/50' : 'bg-slate-100 border-slate-200'
+          } p-4 rounded-lg border`}>
             <div className="flex items-center justify-between mb-3">
               <div className="flex items-center">
                 <Code2 className={`w-5 h-5 ${contract.color.replace('bg-', 'text-')} mr-2`} />
@@ -59,20 +64,30 @@ const ContractAnalysis: React.FC = () => {
         ))}
       </div>
 
-      <div className="bg-slate-100 p-4 rounded-lg border border-slate-200">
-        <h3 className="font-semibold text-slate-900 mb-3">Optimization Suggestions</h3>
+      <div className={`${
+        isDark ? 'bg-slate-800/50 border-slate-700/50' : 'bg-slate-100 border-slate-200'
+      } p-4 rounded-lg border`}>
+        <h3 className={`font-semibold ${isDark ? 'text-white' : 'text-slate-900'} mb-3`}>
+          Optimization Suggestions
+        </h3>
         <div className="space-y-2">
           <div className="flex items-start">
             <TrendingDown className="w-4 h-4 text-green-500 mt-1 mr-2 flex-shrink-0" />
-            <p className="text-sm text-slate-600">Consider using Uniswap V3 for token swaps as it's 40% more gas efficient than alternatives.</p>
+            <p className={`text-sm ${isDark ? 'text-slate-300' : 'text-slate-600'}`}>
+              Consider using Uniswap V3 for token swaps as it's 40% more gas efficient than alternatives.
+            </p>
           </div>
           <div className="flex items-start">
             <TrendingDown className="w-4 h-4 text-green-500 mt-1 mr-2 flex-shrink-0" />
-            <p className="text-sm text-slate-600">Batch multiple NFT transactions to save up to 25% on gas fees.</p>
+            <p className={`text-sm ${isDark ? 'text-slate-300' : 'text-slate-600'}`}>
+              Batch multiple NFT transactions to save up to 25% on gas fees.
+            </p>
           </div>
           <div className="flex items-start">
             <AlertTriangle className="w-4 h-4 text-yellow-500 mt-1 mr-2 flex-shrink-0" />
-            <p className="text-sm text-slate-600">Your custom contract shows high gas usage. Consider implementing ERC721A for NFT minting to reduce costs.</p>
+            <p className={`text-sm ${isDark ? 'text-slate-300' : 'text-slate-600'}`}>
+              Your custom contract shows high gas usage. Consider implementing ERC721A for NFT minting to reduce costs.
+            </p>
           </div>
         </div>
       </div>

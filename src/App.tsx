@@ -1,4 +1,3 @@
-import React from 'react';
 import { Activity, Clock } from 'lucide-react';
 import Header from './components/layout/Header';
 import StatCard from './components/dashboard/StatCard';
@@ -14,7 +13,9 @@ function App() {
   const { isDark } = useTheme();
 
   return (
-    <div className={`min-h-screen ${isDark ? 'bg-gradient-to-br from-slate-900 to-slate-800 text-white' : 'bg-gradient-to-br from-slate-100 to-white text-slate-900'}`}>
+    <div className={`min-h-screen ${
+      isDark ? 'bg-slate-900 text-white' : 'bg-slate-50 text-slate-900'
+    }`}>
       <Header />
 
       <main className="container mx-auto px-4 py-6 space-y-6">
@@ -65,7 +66,7 @@ function App() {
                   </button>
                 </div>
               </div>
-              <GasChart data={gasData} isDark={isDark} />
+              <GasChart data={gasData} />
             </div>
 
             <div className={`${isDark ? 'bg-slate-800/50' : 'bg-white'} backdrop-blur-sm p-6 rounded-xl ${isDark ? 'border-slate-700/50' : 'border-slate-200'} border shadow-lg`}>

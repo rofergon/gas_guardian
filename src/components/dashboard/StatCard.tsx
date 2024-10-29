@@ -1,5 +1,6 @@
 import React from 'react';
 import { LucideIcon, TrendingUp, TrendingDown } from 'lucide-react';
+import { useTheme } from '../../hooks/useTheme';
 
 interface StatCardProps {
   title: string;
@@ -26,23 +27,33 @@ const StatCard: React.FC<StatCardProps> = ({
   trend,
   progress
 }) => {
+  const { isDark } = useTheme();
+  
   return (
-    <div className="bg-white/95 backdrop-blur-sm p-6 rounded-xl border border-slate-200/50 hover:bg-slate-50/90 transition-colors shadow-sm">
+    <div className={`${
+      isDark 
+        ? 'bg-slate-800/50 border-slate-700/50 hover:bg-slate-700/50' 
+        : 'bg-white/95 border-slate-200/50 hover:bg-slate-50/90'
+    } backdrop-blur-sm p-6 rounded-xl border transition-colors shadow-sm`}>
       <div className="flex items-start justify-between">
         <div className="space-y-2">
-          <p className="text-sm text-slate-600">{title}</p>
-          <h3 className="text-2xl font-semibold text-slate-900">{value}</h3>
+          <p className={`text-sm ${isDark ? 'text-slate-400' : 'text-slate-600'}`}>{title}</p>
+          <h3 className={`text-2xl font-semibold ${isDark ? 'text-white' : 'text-slate-900'}`}>{value}</h3>
           <div className="flex items-center space-x-2">
-            <span className="text-xs text-slate-500">{subtitle}</span>
+            <span className={`text-xs ${isDark ? 'text-slate-400' : 'text-slate-500'}`}>{subtitle}</span>
             {trend && (
-              <span className={`flex items-center text-xs ${trend.direction === 'up' ? 'text-red-600' : 'text-emerald-600'}`}>
+              <span className={`flex items-center text-xs ${
+                trend.direction === 'up' 
+                  ? isDark ? 'text-red-400' : 'text-red-600'
+                  : isDark ? 'text-emerald-400' : 'text-emerald-600'
+              }`}>
                 {trend.direction === 'up' ? <TrendingUp className="w-3 h-3 mr-1" /> : <TrendingDown className="w-3 h-3 mr-1" />}
                 {trend.value}
               </span>
             )}
           </div>
           {progress && (
-            <div className="mt-3 w-full bg-slate-100 rounded-full h-2">
+            <div className={`mt-3 w-full ${isDark ? 'bg-slate-700' : 'bg-slate-100'} rounded-full h-2`}>
               <div 
                 className={`${progress.color} h-2 rounded-full transition-all duration-500 ease-in-out`} 
                 style={{ width: `${progress.value}%` }}
