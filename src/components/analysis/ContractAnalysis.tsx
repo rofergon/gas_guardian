@@ -94,7 +94,7 @@ const ContractAnalysis: React.FC = () => {
 
   const handleAddContract = async () => {
     if (!ethers.isAddress(newContract.address)) {
-      alert('Dirección inválida');
+      alert('Invalid address');
       return;
     }
 
