@@ -20,6 +20,9 @@ const GasChart: React.FC<GasChartProps> = ({ data }) => {
   const [top] = useState('dataMax+1');
   const [bottom] = useState('dataMin-1');
 
+  // Reducir los datos a la mitad
+  const optimizedData = data.filter((_, index) => index % 2 === 0);
+
   const zoom = () => {
     if (refAreaLeft === refAreaRight || !refAreaRight) {
       setRefAreaLeft('');
@@ -78,7 +81,7 @@ const GasChart: React.FC<GasChartProps> = ({ data }) => {
     <div className="relative">
       <ResponsiveContainer width="100%" height={400}>
         <LineChart
-          data={data}
+          data={optimizedData}
           margin={{ top: 20, right: 30, left: 20, bottom: 5 }}
           onMouseDown={(e) => e?.activeLabel && setRefAreaLeft(e.activeLabel || '')}
           onMouseMove={(e) => refAreaLeft && e?.activeLabel && setRefAreaRight(e.activeLabel || '')}

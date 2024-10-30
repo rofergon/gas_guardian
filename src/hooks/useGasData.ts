@@ -27,11 +27,13 @@ export const useGasData = () => {
       const query = timeRange === '24H' 
         ? `SELECT 
             strftime('%H:%M', timestamp) as time,
-            ROUND(price, 9) as price,
-            network_activity,
-            ROUND(predicted_low, 9) as predicted_low
+            ROUND(AVG(price), 9) as price,
+            AVG(network_activity) as network_activity,
+            ROUND(AVG(predicted_low), 9) as predicted_low
           FROM gas_prices 
           WHERE timestamp >= datetime('now', '-1 day')
+          GROUP BY strftime('%H:%M', timestamp)
+          HAVING MOD(CAST(strftime('%M', timestamp) AS INTEGER), 2) = 0
           ORDER BY timestamp ASC`
         : `SELECT 
             strftime('%Y-%m-%d %H:%M', timestamp) as time,
@@ -41,6 +43,7 @@ export const useGasData = () => {
           FROM gas_prices 
           WHERE timestamp >= datetime('now', '-7 day')
           GROUP BY strftime('%Y-%m-%d %H', timestamp)
+          HAVING MOD(CAST(strftime('%H', timestamp) AS INTEGER), 2) = 0
           ORDER BY timestamp ASC`;
 
       const result = await db.execute({
