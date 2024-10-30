@@ -12,6 +12,30 @@ interface GasAnalyticsProps {
 const GasAnalytics: React.FC<GasAnalyticsProps> = ({ gasData }) => {
   const { isDark } = useTheme();
 
+  const formatTime = (timeString: string) => {
+    try {
+      const date = new Date(timeString);
+      if (isNaN(date.getTime())) {
+        return timeString;
+      }
+      
+      // Convertir a formato HH:MM
+      return new Intl.DateTimeFormat('en-US', {
+        hour: '2-digit',
+        minute: '2-digit',
+        hour12: false // Esto asegura formato 24 horas
+      }).format(date);
+    } catch (error) {
+      console.error('Error formatting time:', error);
+      return timeString;
+    }
+  };
+
+  const formattedData = gasData.map(data => ({
+    ...data,
+    timestamp: formatTime(data.timestamp)
+  }));
+
   return (
     <div className={`p-4 rounded-xl border ${
       isDark ? 'bg-slate-800/50 border-slate-700/50' : 'bg-white/95 border-slate-200'
@@ -41,9 +65,9 @@ const GasAnalytics: React.FC<GasAnalyticsProps> = ({ gasData }) => {
 
       <div className="h-64 mb-4">
         <ResponsiveContainer width="100%" height="100%">
-          <BarChart data={gasData}>
+          <BarChart data={formattedData}>
             <XAxis 
-              dataKey="timestamp" 
+              dataKey="time" 
               angle={-45} 
               textAnchor="end" 
               height={70} 

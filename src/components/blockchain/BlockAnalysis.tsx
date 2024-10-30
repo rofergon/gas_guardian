@@ -1,9 +1,21 @@
 import React, { useMemo } from 'react';
 import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer } from 'recharts';
 import { useTheme } from '../../hooks/useTheme';
+import { format } from 'date-fns';
+
+interface Transaction {
+  gasPrice: string;
+}
+
+interface BlockData {
+  data?: {
+    transactions: Transaction[];
+    gasUsed: string;
+  };
+}
 
 interface BlockAnalysisProps {
-  blockData: any;
+  blockData: BlockData;
 }
 
 interface TransactionAnalysis {
@@ -12,7 +24,10 @@ interface TransactionAnalysis {
   totalGasUsed: string;
   highestGasPrice: string;
   lowestGasPrice: string;
-  transactionsByGasPrice: any[];
+  transactionsByGasPrice: Array<{
+    range: string;
+    count: number;
+  }>;
 }
 
 const BlockAnalysis: React.FC<BlockAnalysisProps> = ({ blockData }) => {
@@ -24,7 +39,7 @@ const BlockAnalysis: React.FC<BlockAnalysisProps> = ({ blockData }) => {
     const transactions = blockData.data.transactions;
     
     // Convertir precios de gas de hex a decimal
-    const gasPrices = transactions.map((tx: any) => 
+    const gasPrices = transactions.map((tx: Transaction) => 
       parseInt(tx.gasPrice, 16) / 1e9
     );
 
@@ -36,11 +51,11 @@ const BlockAnalysis: React.FC<BlockAnalysisProps> = ({ blockData }) => {
     });
 
     const chartData = Object.entries(priceRanges)
-      .map(([range, count]) => ({
-        range: `${range}-${Number(range) + 5} Gwei`,
+      .map(([, count]) => ({
+        range: format(new Date(), 'HH:mm'),
         count
       }))
-      .sort((a, b) => Number(a.range.split('-')[0]) - Number(b.range.split('-')[0]));
+      .sort((a, b) => new Date(a.range).getTime() - new Date(b.range).getTime());
 
     return {
       averageGasPrice: (gasPrices.reduce((a, b) => a + b, 0) / gasPrices.length).toFixed(2),
