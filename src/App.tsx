@@ -4,13 +4,17 @@ import StatCard from './components/dashboard/StatCard';
 import GasChart from './components/dashboard/GasChart';
 import PredictionCard from './components/predictions/PredictionCard';
 import { CustomAlerts } from './components/alerts/CustomAlerts';
-import ContractAnalysis from './components/analysis/ContractAnalysis';
+import GasAnalysisChart from './components/analysis/GasAnalysisChart';
 import { useGasData } from './hooks/useGasData';
 import { useTheme } from './hooks/useTheme';
+import { useGasHistoryService } from './hooks/useGasHistoryService';
 
 function App() {
   const { currentGwei, predictedLow, gasData, networkActivity } = useGasData();
   const { isDark } = useTheme();
+
+  // Usar el hook
+  useGasHistoryService();
 
   return (
     <div className={`min-h-screen flex flex-col ${
@@ -64,7 +68,7 @@ function App() {
             </div>
 
             <div className={`${isDark ? 'bg-slate-800/50' : 'bg-white'} backdrop-blur-sm p-6 rounded-xl ${isDark ? 'border-slate-700/50' : 'border-slate-200'} border shadow-lg`}>
-              <ContractAnalysis />
+              <GasAnalysisChart />
             </div>
           </div>
 
