@@ -72,21 +72,6 @@ export const useGasData = () => {
         console.error('Error checking alerts:', error);
       });
 
-      const networkActivity = Math.min(100, Math.floor(currentPrice / 2));
-      const predictedLow = parseFloat((currentPrice * 0.85).toFixed(9));
-
-      console.log('Guardando nuevo precio:', {
-        currentPrice,
-        networkActivity,
-        predictedLow
-      });
-
-      db.execute({
-        sql: `INSERT INTO gas_prices (price, network_activity, predicted_low)
-              VALUES (?, ?, ?)`,
-        args: [currentPrice, networkActivity, predictedLow]
-      }).catch(error => console.error('Error guardando precio del gas:', error));
-
       loadHistoricalData();
     }
   }, [gasPrice, isLoading]);

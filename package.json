@@ -10,14 +10,17 @@
     "preview": "vite preview",
     "init-db": "tsx scripts/initDb.ts",
     "delete-invalid-gas": "tsx scripts/deleteInvalidGasData.ts",
-    "init-alerts-db": "tsx scripts/initAlertsTables.ts"
+    "init-alerts-db": "tsx scripts/initAlertsTables.ts",
+    "list-models": "tsx scripts/listModels.ts"
   },
   "dependencies": {
     "@libsql/client": "^0.14.0",
+    "@netlify/functions": "^2.8.2",
     "@types/dotenv": "^8.2.3",
     "date-fns": "^4.1.0",
     "ethers": "^6.13.4",
     "lucide-react": "^0.344.0",
+    "openai": "^4.68.4",
     "react": "^18.3.1",
     "react-dom": "^18.3.1",
     "recharts": "^2.12.2",

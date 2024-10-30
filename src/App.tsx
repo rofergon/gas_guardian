@@ -71,7 +71,7 @@ function App() {
           </div>
 
           <div className="lg:col-span-4 space-y-6">
-            <PredictionCard predictedDrop={15} optimalTime="2:00 AM" />
+            <PredictionCard gasData={gasData.map(d => ({ time: d.time, price: d.price }))} />
             <CustomAlerts />
           </div>
         </div>
