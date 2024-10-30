@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Brain, TrendingDown, Clock, Zap, RefreshCw, Send, X } from 'lucide-react';
+import { Brain, TrendingDown, Clock, Zap, RefreshCw, Send, X, Activity } from 'lucide-react';
 import { useTheme } from '../../hooks/useTheme';
 import { aiService } from '../../services/aiService';
 
@@ -7,12 +7,15 @@ interface PredictionCardProps {
   gasData: { time: string; price: number }[];
 }
 
+
 const PredictionCard: React.FC<PredictionCardProps> = ({ gasData }) => {
   const { isDark } = useTheme();
   const [predictions, setPredictions] = useState({
     predictedDrop: 0,
     optimalTime: '',
-    recommendations: [] as string[]
+    recommendations: [] as string[],
+    marketCondition: '',
+    graphAnalysis: ''
   });
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -185,6 +188,29 @@ const PredictionCard: React.FC<PredictionCardProps> = ({ gasData }) => {
                     </li>
                   ))}
                 </ul>
+              </div>
+
+              <div className="p-4 bg-slate-700/30 rounded-lg">
+                <h3 className="font-semibold mb-3 flex items-center">
+                  <Activity className="w-4 h-4 text-blue-500 mr-2" />
+                  Market Analysis
+                </h3>
+                <div className="space-y-3">
+                  <div>
+                    <span className="text-slate-400">Market Condition: </span>
+                    <span className={`font-medium ${
+                      predictions.marketCondition === 'bullish' ? 'text-green-500' :
+                      predictions.marketCondition === 'bearish' ? 'text-red-500' :
+                      'text-yellow-500'
+                    }`}>
+                      {predictions.marketCondition?.toUpperCase()}
+                    </span>
+                  </div>
+                  <div>
+                    <span className="text-slate-400">Analysis: </span>
+                    <span className="text-slate-300">{predictions.graphAnalysis}</span>
+                  </div>
+                </div>
               </div>
             </>
           ) : (
