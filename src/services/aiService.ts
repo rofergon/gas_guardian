@@ -9,7 +9,12 @@ interface AIPrediction {
 export const aiService = {
   async generatePredictions(historicalData: { time: string; price: number }[]): Promise<AIPrediction> {
     try {
-      const predictions = await generateAIPredictions(historicalData);
+      const simplifiedData = {
+        firstRecord: historicalData[0],
+        lastRecord: historicalData[historicalData.length - 1]
+      };
+      
+      const predictions = await generateAIPredictions(simplifiedData);
       
       return {
         predictedDrop: predictions.predictedDrop,

@@ -8,7 +8,6 @@ const openai = new OpenAI({
 export async function generateAIPredictions(historicalData: any, customPrompt?: string) {
   console.log('🚀 Starting AI prediction generation');
   console.log('📊 Historical data received:', historicalData);
-  console.log('💭 Custom prompt:', customPrompt);
 
   try {
     let prompt;
@@ -18,8 +17,9 @@ export async function generateAIPredictions(historicalData: any, customPrompt?: 
       prompt = `Analyze this Ethereum gas data and answer: ${customPrompt}
                 Data: ${JSON.stringify(historicalData)}`;
     } else {
-      prompt = `Based on this historical Ethereum gas price data:
-        ${JSON.stringify(historicalData)}
+      prompt = `Based on these Ethereum gas price data points:
+        Initial reading at ${historicalData.firstRecord.time}: ${historicalData.firstRecord.price} Gwei
+        Current reading at ${historicalData.lastRecord.time}: ${historicalData.lastRecord.price} Gwei
         
         Provide in JSON format:
         {

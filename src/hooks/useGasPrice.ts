@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { createClient } from '@libsql/client';
 
 interface GasPriceResponse {
   jsonrpc: string;
@@ -10,10 +11,32 @@ interface GasPriceResponse {
   };
 }
 
+const db = createClient({
+  url: import.meta.env.VITE_TURSO_URL as string,
+  authToken: import.meta.env.VITE_TURSO_AUTH_TOKEN as string,
+});
+
 export const useGasPrice = (chainId: number = 1) => {
   const [gasPrice, setGasPrice] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+
+  const saveGasPrice = async (price: string) => {
+    try {
+      const priceInGwei = parseInt(price, 16) / 1e9;
+      const predictedLow = priceInGwei * 0.85; // Estimación simple del precio bajo
+      
+      await db.execute({
+        sql: `INSERT INTO gas_prices (price, predicted_low, network_activity) 
+              VALUES (?, ?, ?)`,
+        args: [priceInGwei, predictedLow, 10]
+      });
+      
+      console.log('Gas price saved to database:', priceInGwei);
+    } catch (err) {
+      console.error('Error saving gas price to database:', err);
+    }
+  };
 
   useEffect(() => {
     const fetchGasPrice = async () => {
@@ -41,6 +64,7 @@ export const useGasPrice = (chainId: number = 1) => {
         } else if (data.result) {
           console.log('Gas Price Result:', data.result);
           setGasPrice(data.result);
+          await saveGasPrice(data.result);
           setError(null);
         } else {
           setError('Invalid response format');
