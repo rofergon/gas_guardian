@@ -56,34 +56,27 @@ const ContractAnalysis: React.FC = () => {
   });
   const [contracts, setContracts] = useState<Contract[]>(() => {
     try {
-      console.log('Trying to load contracts from localStorage...');
       const savedContracts = localStorage.getItem('savedContracts');
-      console.log('Contracts saved in localStorage:', savedContracts);
       
       if (!savedContracts) {
-        console.log('No saved contracts found');
         return [];
       }
 
       const parsedContracts = JSON.parse(savedContracts) as SavedContract[];
-      console.log('Parsed contracts:', parsedContracts);
       
       const contractsWithDisplay = parsedContracts.map((contract: SavedContract) => {
         const efficiency = contract.efficiency || 'Moderate';
         const displayProps = getContractDisplayProperties(efficiency);
         
-        const finalContract = {
+        return {
           ...contract,
           ...displayProps
         };
-        console.log('Processed contract:', finalContract);
-        return finalContract;
       });
 
-      console.log('Final loaded contracts:', contractsWithDisplay);
       return contractsWithDisplay;
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     } catch (error) {
-      console.error('Error loading contracts:', error);
       return [];
     }
   });
@@ -101,7 +94,7 @@ const ContractAnalysis: React.FC = () => {
     try {
       const provider = new ethers.JsonRpcProvider(import.meta.env.VITE_QUICKNODE_HTTP_URL);
       
-      // Obtener el estimado de gas
+      
       const gasEstimate = await provider.estimateGas({
         to: newContract.address,
         data: '0x70a08231'
@@ -137,13 +130,9 @@ const ContractAnalysis: React.FC = () => {
 
   const addContract = (newContract: Contract) => {
     try {
-      console.log('Adding new contract:', newContract);
       const updatedContracts = [...contracts, newContract];
-      console.log('Updated list of contracts:', updatedContracts);
-      
       setContracts(updatedContracts);
       
-      // Guardar en localStorage como string
       const contractsToSave: SavedContract[] = updatedContracts.map(contract => ({
         name: contract.name,
         averageGas: contract.averageGas,
@@ -152,12 +141,7 @@ const ContractAnalysis: React.FC = () => {
         percentage: contract.percentage
       }));
       
-      console.log('Contracts to save in localStorage:', contractsToSave);
       localStorage.setItem('savedContracts', JSON.stringify(contractsToSave));
-      
-      // Verificar que se guardó correctamente
-      const savedData = localStorage.getItem('savedContracts');
-      console.log('Data verified in localStorage:', savedData);
     } catch (error) {
       console.error('Error saving contracts:', error);
     }
@@ -165,13 +149,9 @@ const ContractAnalysis: React.FC = () => {
 
   const deleteContract = (index: number) => {
     try {
-      console.log('Deleting contract at index:', index);
       const updatedContracts = contracts.filter((_, i) => i !== index);
-      console.log('Contracts after deletion:', updatedContracts);
-      
       setContracts(updatedContracts);
       
-      // Actualizar localStorage
       const contractsToSave: SavedContract[] = updatedContracts.map(contract => ({
         name: contract.name,
         averageGas: contract.averageGas,
@@ -181,7 +161,6 @@ const ContractAnalysis: React.FC = () => {
       }));
       
       localStorage.setItem('savedContracts', JSON.stringify(contractsToSave));
-      console.log('Contracts updated in localStorage');
     } catch (error) {
       console.error('Error deleting contract:', error);
     }

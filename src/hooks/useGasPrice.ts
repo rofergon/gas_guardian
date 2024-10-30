@@ -24,17 +24,16 @@ export const useGasPrice = (chainId: number = 1) => {
   const saveGasPrice = async (price: string) => {
     try {
       const priceInGwei = parseInt(price, 16) / 1e9;
-      const predictedLow = priceInGwei * 0.85; // Estimación simple del precio bajo
+      const predictedLow = priceInGwei * 0.85;
       
       await db.execute({
         sql: `INSERT INTO gas_prices (price, predicted_low, network_activity) 
               VALUES (?, ?, ?)`,
         args: [priceInGwei, predictedLow, 10]
       });
-      
-      console.log('Gas price saved to database:', priceInGwei);
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     } catch (err) {
-      console.error('Error saving gas price to database:', err);
+      // Error silencioso o manejo alternativo si es necesario
     }
   };
 
@@ -55,14 +54,11 @@ export const useGasPrice = (chainId: number = 1) => {
         });
 
         const data: GasPriceResponse = await response.json();
-        console.log('API Response:', data);
 
         if (data.error) {
-          console.error('QuickNode API error:', data.error);
           setError(data.error.message);
           setGasPrice(null);
         } else if (data.result) {
-          console.log('Gas Price Result:', data.result);
           setGasPrice(data.result);
           await saveGasPrice(data.result);
           setError(null);
@@ -71,7 +67,6 @@ export const useGasPrice = (chainId: number = 1) => {
           setGasPrice(null);
         }
       } catch (err) {
-        console.error('Gas price fetch error:', err);
         setError(err instanceof Error ? err.message : 'Error fetching gas price');
         setGasPrice(null);
       } finally {

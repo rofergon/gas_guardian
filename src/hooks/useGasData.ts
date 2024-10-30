@@ -15,9 +15,9 @@ export const useGasData = () => {
     try {
       const cleanHex = price.startsWith('0x') ? price : `0x${price}`;
       const priceInWei = BigInt(cleanHex);
-      return parseFloat((Number(priceInWei) / 1e9).toFixed(9)); // Mantener 9 decimales
+      return parseFloat((Number(priceInWei) / 1e9).toFixed(9));
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     } catch (error) {
-      console.error('Error formatting gas price:', error);
       return 0;
     }
   };
@@ -55,10 +55,9 @@ export const useGasData = () => {
         predictedLow: parseFloat(Number(row.predicted_low).toFixed(9))
       }));
 
-      console.log('Datos cargados:', formattedData);
       setGasData(formattedData);
     } catch (error) {
-      console.error('Error cargando datos históricos:', error);
+      console.error('Error loading historical gas data:', error);
     }
   };
 

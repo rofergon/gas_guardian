@@ -64,9 +64,6 @@ const GasChart: React.FC<GasChartProps> = ({ data }) => {
     }
   };
 
-  // Para debug - imprimir el primer elemento de data
-  console.log('Sample data time:', data?.[0]?.time);
-
   if (!data || data.length === 0) {
     return (
       <div className="flex items-center justify-center h-[400px]">

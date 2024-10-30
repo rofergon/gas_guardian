@@ -1,4 +1,4 @@
-import { generateAIPredictions } from '../server/api';
+import { generateAIPredictions } from '../server/apiOpenai';
 
 interface AIPrediction {
   predictedDrop: number;

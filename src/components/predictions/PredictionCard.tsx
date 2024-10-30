@@ -23,12 +23,7 @@ const PredictionCard: React.FC<PredictionCardProps> = ({ gasData }) => {
   const [showCustomInput, setShowCustomInput] = useState(false);
 
   const generatePredictions = async (customRequest?: string) => {
-    console.log('🎯 Starting prediction generation');
-    console.log('📊 Available data:', gasData);
-    console.log('💭 Custom prompt:', customRequest);
-
     if (gasData.length === 0) {
-      console.log('⚠️ No data available');
       setError('Insufficient data to generate predictions');
       return;
     }
@@ -37,17 +32,15 @@ const PredictionCard: React.FC<PredictionCardProps> = ({ gasData }) => {
       setLoading(true);
       setError(null);
       
-      console.log('⏳ Requesting predictions from service...');
       const newPredictions = await aiService.generatePredictions(gasData, customRequest);
       
-      console.log('✅ Predictions received:', newPredictions);
       setPredictions(newPredictions);
       if (customRequest) {
         setCustomPrompt('');
         setShowCustomInput(false);
       }
-    } catch (error) {
-      console.error('❌ Error generating predictions:', error);
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    } catch (_err: Error | unknown) {
       setError('Could not generate predictions');
     } finally {
       setLoading(false);

@@ -113,7 +113,6 @@ IMPORTANT: Reply ONLY with a valid JSON object with this structure:
     });
 
     const response = completion.choices[0].message.content || '';
-    console.log('✅ OpenAI response:', response);
 
     if (customPrompt) {
       return {
