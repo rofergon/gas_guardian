@@ -16,7 +16,7 @@ export const aiService = {
         firstRecord: gasData[0],
         lastRecord: gasData[gasData.length - 1],
         networkStats: {
-          currentLoad: 8,
+          currentLoad: Math.min(100, Math.floor(gasData[gasData.length - 1].price / 2)),
           averageGasUsed: calculateAverageGas(gasData),
           pendingTransactions: 0
         },

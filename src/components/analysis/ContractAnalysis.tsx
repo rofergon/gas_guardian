@@ -14,7 +14,7 @@ interface Contract {
   percentage: number;
 }
 
-// Agregar esta interfaz para los contratos guardados
+// Add this interface for saved contracts
 interface SavedContract {
   name: string;
   averageGas: number;
@@ -23,7 +23,7 @@ interface SavedContract {
   percentage: number;
 }
 
-// Mover la función getContractDisplayProperties antes de su uso
+// Move the getContractDisplayProperties function before its use
 const getContractDisplayProperties = (efficiency: Contract['efficiency']) => {
   switch (efficiency) {
     case 'Efficient':
@@ -56,17 +56,17 @@ const ContractAnalysis: React.FC = () => {
   });
   const [contracts, setContracts] = useState<Contract[]>(() => {
     try {
-      console.log('Intentando cargar contratos desde localStorage...');
+      console.log('Trying to load contracts from localStorage...');
       const savedContracts = localStorage.getItem('savedContracts');
-      console.log('Contratos guardados en localStorage:', savedContracts);
+      console.log('Contracts saved in localStorage:', savedContracts);
       
       if (!savedContracts) {
-        console.log('No hay contratos guardados');
+        console.log('No saved contracts found');
         return [];
       }
 
       const parsedContracts = JSON.parse(savedContracts) as SavedContract[];
-      console.log('Contratos parseados:', parsedContracts);
+      console.log('Parsed contracts:', parsedContracts);
       
       const contractsWithDisplay = parsedContracts.map((contract: SavedContract) => {
         const efficiency = contract.efficiency || 'Moderate';
@@ -76,14 +76,14 @@ const ContractAnalysis: React.FC = () => {
           ...contract,
           ...displayProps
         };
-        console.log('Contrato procesado:', finalContract);
+        console.log('Processed contract:', finalContract);
         return finalContract;
       });
 
-      console.log('Contratos finales cargados:', contractsWithDisplay);
+      console.log('Final loaded contracts:', contractsWithDisplay);
       return contractsWithDisplay;
     } catch (error) {
-      console.error('Error al cargar contratos:', error);
+      console.error('Error loading contracts:', error);
       return [];
     }
   });
@@ -130,16 +130,16 @@ const ContractAnalysis: React.FC = () => {
       setIsModalOpen(false);
       setNewContract({ address: '', name: '' });
     } catch (error) {
-      console.error('Error al estimar gas:', error);
-      alert('Error al analizar el contrato. Verifica que la dirección sea correcta.');
+      console.error('Error estimating gas:', error);
+      alert('Error analyzing contract. Verify that the address is correct.');
     }
   };
 
   const addContract = (newContract: Contract) => {
     try {
-      console.log('Agregando nuevo contrato:', newContract);
+      console.log('Adding new contract:', newContract);
       const updatedContracts = [...contracts, newContract];
-      console.log('Lista actualizada de contratos:', updatedContracts);
+      console.log('Updated list of contracts:', updatedContracts);
       
       setContracts(updatedContracts);
       
@@ -152,22 +152,22 @@ const ContractAnalysis: React.FC = () => {
         percentage: contract.percentage
       }));
       
-      console.log('Contratos a guardar en localStorage:', contractsToSave);
+      console.log('Contracts to save in localStorage:', contractsToSave);
       localStorage.setItem('savedContracts', JSON.stringify(contractsToSave));
       
       // Verificar que se guardó correctamente
       const savedData = localStorage.getItem('savedContracts');
-      console.log('Datos verificados en localStorage:', savedData);
+      console.log('Data verified in localStorage:', savedData);
     } catch (error) {
-      console.error('Error al guardar contratos:', error);
+      console.error('Error saving contracts:', error);
     }
   };
 
   const deleteContract = (index: number) => {
     try {
-      console.log('Borrando contrato en índice:', index);
+      console.log('Deleting contract at index:', index);
       const updatedContracts = contracts.filter((_, i) => i !== index);
-      console.log('Contratos después de borrar:', updatedContracts);
+      console.log('Contracts after deletion:', updatedContracts);
       
       setContracts(updatedContracts);
       
@@ -181,9 +181,9 @@ const ContractAnalysis: React.FC = () => {
       }));
       
       localStorage.setItem('savedContracts', JSON.stringify(contractsToSave));
-      console.log('Contratos actualizados en localStorage');
+      console.log('Contracts updated in localStorage');
     } catch (error) {
-      console.error('Error al borrar contrato:', error);
+      console.error('Error deleting contract:', error);
     }
   };
 
@@ -230,7 +230,7 @@ const ContractAnalysis: React.FC = () => {
                       ? 'hover:bg-red-500/20 text-red-400' 
                       : 'hover:bg-red-100 text-red-500'
                   }`}
-                  title="Eliminar contrato"
+                  title="Delete contract"
                 >
                   <Trash2 className="w-4 h-4" />
                 </button>
@@ -272,7 +272,7 @@ const ContractAnalysis: React.FC = () => {
                       ? 'bg-slate-700/50 border-slate-600 text-white' 
                       : 'bg-white border-slate-300'
                   }`}
-                  placeholder="Mi Contrato"
+                  placeholder="My Contract"
                 />
               </div>
               
@@ -303,13 +303,13 @@ const ContractAnalysis: React.FC = () => {
                     : 'bg-slate-200 hover:bg-slate-300 text-slate-700'
                 }`}
               >
-                Cancelar
+                Cancel
               </button>
               <button
                 onClick={handleAddContract}
                 className="px-4 py-2 bg-blue-500 hover:bg-blue-600 text-white rounded-lg"
               >
-                Agregar
+                Add
               </button>
             </div>
           </div>

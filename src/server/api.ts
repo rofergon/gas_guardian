@@ -15,23 +15,23 @@ interface EnhancedHistoricalData {
     price: number;
   };
   networkStats: {
-    currentLoad: number;        // El 8% que se muestra en la UI
-    averageGasUsed: number;     // Promedio de gas usado
-    pendingTransactions: number;// Transacciones pendientes
+    currentLoad: number;        // The 8% shown in the UI
+    averageGasUsed: number;     // Average gas used
+    pendingTransactions: number;// Pending transactions
   };
   priceStats: {
-    percentageChange: number;   // El 27.8% que se ve en la UI
-    predictedLow: number;       // 14.01 Gwei en la imagen
-    currentPrice: number;       // 16.48 Gwei actual
+    percentageChange: number;   // The 27.8% shown in the UI
+    predictedLow: number;       // 14.01 Gwei in the image
+    currentPrice: number;       // Current 16.48 Gwei
     dayHighLow: {
       high: number;
       low: number;
     };
   };
   timeContext: {
-    dayOfWeek: number;         // Para patrones semanales
-    hourOfDay: number;         // Para patrones diarios
-    isWeekend: boolean;        // Comportamiento fin de semana
+    dayOfWeek: number;         // For weekly patterns
+    hourOfDay: number;         // For daily patterns
+    isWeekend: boolean;        // Weekend behavior
   }
 }
 
@@ -49,20 +49,20 @@ export async function generateAIPredictions(
         content: [
           {
             type: "text",
-            text: "Analiza este gráfico de precios de gas de Ethereum de las últimas 24 horas y proporciona:\n\n" +
+            text: "Analyze this Ethereum gas price chart for the last 24 hours and provide:\n\n" +
                  "1. Market Condition:\n" +
-                 "- Tendencia general del gas\n" +
-                 "- Niveles específicos de soporte y resistencia en Gwei\n" +
-                 "- Porcentaje de variación en las últimas 24 horas\n\n" +
-                 "2. Recomendaciones específicas basadas en el gráfico:\n" +
-                 "- Identifica las horas exactas donde el gas estuvo más bajo en las últimas 24h\n" +
-                 "- Compara el precio actual con los mínimos y máximos del día\n" +
-                 "- Recomienda si ejecutar transacciones ahora o esperar a una hora específica\n" +
-                 "- Menciona los rangos horarios donde históricamente el gas ha sido más económico\n\n" +
+                 "- General gas trend\n" +
+                 "- Specific support and resistance levels in Gwei\n" +
+                 "- Percentage variation in the last 24 hours\n\n" +
+                 "2. Specific recommendations based on the chart:\n" +
+                 "- Identify the exact hours where gas was lowest in the last 24h\n" +
+                 "- Compare current price with day's highs and lows\n" +
+                 "- Recommend whether to execute transactions now or wait for a specific time\n" +
+                 "- Mention time ranges where gas has historically been cheaper\n\n" +
                  "3. Graph Analysis:\n" +
-                 "- Patrones de volatilidad en horas específicas\n" +
-                 "- Tendencias de congestión de la red en diferentes momentos del día\n" +
-                 "- Proyección de precios para las próximas horas basada en el patrón actual"
+                 "- Volatility patterns at specific hours\n" +
+                 "- Network congestion trends at different times of day\n" +
+                 "- Price projection for the coming hours based on current pattern"
           },
           {
             type: "image_url",
@@ -74,30 +74,30 @@ export async function generateAIPredictions(
       });
     }
 
-    const prompt = `Analiza los datos de gas de Ethereum y el gráfico proporcionado:
+    const prompt = `Analyze the Ethereum gas data and provided chart:
 
-1. PRECIOS Y TENDENCIAS:
-- Precio actual: ${historicalData.priceStats.currentPrice.toFixed(2)} Gwei
-- Variación: ${historicalData.priceStats.percentageChange.toFixed(2)}%
-- Rango del día: ${historicalData.priceStats.dayHighLow.low.toFixed(2)} - ${historicalData.priceStats.dayHighLow.high.toFixed(2)} Gwei
+1. PRICES AND TRENDS:
+- Current price: ${historicalData.priceStats.currentPrice.toFixed(2)} Gwei
+- Variation: ${historicalData.priceStats.percentageChange.toFixed(2)}%
+- Day range: ${historicalData.priceStats.dayHighLow.low.toFixed(2)} - ${historicalData.priceStats.dayHighLow.high.toFixed(2)} Gwei
 
-2. PATRONES DEL GRÁFICO:
-- Identifica tendencias visibles
-- Analiza los puntos de soporte y resistencia
-- Identifica los patrones de volatilidad
+2. CHART PATTERNS:
+- Identify visible trends
+- Analyze support and resistance points
+- Identify volatility patterns
 
-3. MÉTRICAS DE RED:
-- Carga actual: ${historicalData.networkStats.currentLoad}%
-- Promedio de gas: ${historicalData.networkStats.averageGasUsed.toFixed(2)} Gwei
+3. NETWORK METRICS:
+- Current load: ${historicalData.networkStats.currentLoad}%
+- Average gas: ${historicalData.networkStats.averageGasUsed.toFixed(2)} Gwei
 
-IMPORTANTE: Responde ÚNICAMENTE con un objeto JSON válido con esta estructura:
+IMPORTANT: Reply ONLY with a valid JSON object with this structure:
 {
-  "predictedDrop": <número entre 5 y 30>,
-  "optimalTime": "<HH:MM AM/PM> (estas horas deben ser las horas donde el gas estuvo mas bajo en las últimas 24h)>",
-  "confidence": <número entre 1 y 10 basado en el analisis de los datos y el gráfico>,
-  "recommendations": [<array de 3 strings con recomendaciones ingeniosas, estas recomendaciones deben tener todos los datos proporcinados>],
+  "predictedDrop": <number between 5 and 30>,
+  "optimalTime": "<HH:MM AM/PM> (these hours should be when gas was lowest in the last 24h)>",
+  "confidence": <number between 1 and 10 based on data and chart analysis>,
+  "recommendations": [<array of 3 strings with clever recommendations, these recommendations should include all provided data>],
   "marketCondition": "<bullish|bearish|neutral>",
-  "graphAnalysis": "<breve análisis del patrón visible en el gráfico explicando el comportamiento de la red y el razonamiento detras del resultado de marketCondition y dar un consejo sobre el trading de ETH>"
+  "graphAnalysis": "<brief analysis of the visible pattern in the chart explaining network behavior and reasoning behind marketCondition result and give advice about ETH trading>"
 }`;
 
     messages.push({
