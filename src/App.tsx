@@ -13,13 +13,13 @@ function App() {
   const { isDark } = useTheme();
 
   return (
-    <div className={`min-h-screen ${
+    <div className={`min-h-screen flex flex-col ${
       isDark ? 'bg-slate-900 text-white' : 'bg-slate-50 text-slate-900'
     }`}>
       <Header />
 
-      <main className="container mx-auto px-4 py-6 space-y-6">
-        <div className="grid grid-cols-2 lg:grid-cols-3 gap-4">
+      <main className="flex-1 container mx-auto px-4 py-6 space-y-6">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
           <StatCard
             title="Current Gas"
             value={`${currentGwei} Gwei`}
@@ -33,7 +33,6 @@ function App() {
             subtitle="Next 2 hours"
             icon={Clock}
             iconColor={isDark ? "text-blue-500" : "text-blue-600"}
-            
           />
           <StatCard
             title="Network Activity"
@@ -41,12 +40,11 @@ function App() {
             subtitle="Current load"
             icon={Activity}
             iconColor={isDark ? "text-purple-500" : "text-purple-600"}
-            
           />
         </div>
 
-        <div className="grid lg:grid-cols-12 gap-6">
-          <div className="lg:col-span-8 space-y-6">
+        <div className="grid lg:grid-cols-12 gap-6 min-h-[calc(100vh-20rem)]">
+          <div className="lg:col-span-8 space-y-6 flex flex-col">
             <div className={`${isDark ? 'bg-slate-800/50' : 'bg-white'} backdrop-blur-sm p-6 rounded-xl ${isDark ? 'border-slate-700/50' : 'border-slate-200'} border shadow-lg`}>
               <div className="flex items-center justify-between mb-6">
                 <div>

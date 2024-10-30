@@ -74,7 +74,22 @@ export async function generateAIPredictions(
       });
     }
 
-    const prompt = `Analyze the Ethereum gas data and provided chart:
+    if (customPrompt) {
+      messages.push({
+        role: "system",
+        content: `Actúa como un analista experto en gas de Ethereum. Usa la siguiente información como contexto:
+        - Precio actual: ${historicalData.priceStats.currentPrice.toFixed(2)} Gwei
+        - Variación: ${historicalData.priceStats.percentageChange.toFixed(2)}%
+        - Rango del día: ${historicalData.priceStats.dayHighLow.low.toFixed(2)} - ${historicalData.priceStats.dayHighLow.high.toFixed(2)} Gwei
+        - Carga de red: ${historicalData.networkStats.currentLoad}%`
+      });
+      
+      messages.push({
+        role: "user",
+        content: customPrompt
+      });
+    } else {
+      const prompt = `Analyze the Ethereum gas data and provided chart:
 
 1. PRICES AND TRENDS:
 - Current price: ${historicalData.priceStats.currentPrice.toFixed(2)} Gwei
@@ -100,10 +115,11 @@ IMPORTANT: Reply ONLY with a valid JSON object with this structure:
   "graphAnalysis": "<brief analysis of the visible pattern in the chart explaining network behavior and reasoning behind marketCondition result and give advice about ETH trading>"
 }`;
 
-    messages.push({
-      role: "user",
-      content: prompt
-    });
+      messages.push({
+        role: "user",
+        content: prompt
+      });
+    }
 
     const completion = await openai.chat.completions.create({
       model: "chatgpt-4o-latest",

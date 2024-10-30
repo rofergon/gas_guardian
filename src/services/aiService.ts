@@ -10,7 +10,11 @@ interface AIPrediction {
 }
 
 export const aiService = {
-  async generatePredictions(gasData: { time: string; price: number }[], customPrompt?: string): Promise<AIPrediction> {
+  async generatePredictions(
+    gasData: { time: string; price: number }[], 
+    customPrompt?: string,
+    previousAnalysis?: AIPrediction
+  ): Promise<AIPrediction> {
     try {
       const enhancedData = {
         firstRecord: gasData[0],
@@ -36,7 +40,17 @@ export const aiService = {
         }
       };
       
-      const predictions = await generateAIPredictions(enhancedData, customPrompt);
+      let enrichedPrompt = customPrompt;
+      if (customPrompt && previousAnalysis) {
+        enrichedPrompt = `Contexto del mercado actual:
+        - Condición del mercado: ${previousAnalysis.marketCondition}
+        - Análisis previo: ${previousAnalysis.graphAnalysis}
+        - Confianza: ${previousAnalysis.confidence}/10
+        
+        Pregunta del usuario: ${customPrompt}`;
+      }
+      
+      const predictions = await generateAIPredictions(enhancedData, undefined, enrichedPrompt);
       
       return {
         predictedDrop: predictions.predictedDrop,
