@@ -15,22 +15,22 @@ interface EnhancedHistoricalData {
     price: number;
   };
   networkStats: {
-    currentLoad: number;        // The 8% shown in the UI
-    averageGasUsed: number;     // Average gas used
-    pendingTransactions: number;// Pending transactions
+    currentLoad: number;        
+    averageGasUsed: number;    
+    pendingTransactions: number;
   };
   priceStats: {
-    percentageChange: number;   // The 27.8% shown in the UI
-    predictedLow: number;       // 14.01 Gwei in the image
-    currentPrice: number;       // Current 16.48 Gwei
+    percentageChange: number;   
+    predictedLow: number;       
+    currentPrice: number;       
     dayHighLow: {
       high: number;
       low: number;
     };
   };
   timeContext: {
-    dayOfWeek: number;         // For weekly patterns
-    hourOfDay: number;         // For daily patterns
+    dayOfWeek: number;         
+    hourOfDay: number;         
     isWeekend: boolean;        // Weekend behavior
   }
 }

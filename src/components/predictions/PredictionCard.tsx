@@ -152,7 +152,9 @@ const PredictionCard: React.FC<PredictionCardProps> = ({ gasData }) => {
         <div className="space-y-4">
           {!customPrompt ? (
             <>
-              <div className="p-4 bg-slate-700/30 rounded-lg">
+              <div className={`p-4 rounded-lg ${
+                isDark ? 'bg-slate-700/30' : 'bg-slate-100'
+              }`}>
                 <div className="flex items-center text-green-500 mb-2">
                   <TrendingDown className="w-4 h-4 mr-2" />
                   <span className="font-semibold">Expected Drop</span>
@@ -160,7 +162,9 @@ const PredictionCard: React.FC<PredictionCardProps> = ({ gasData }) => {
                 <div className="flex items-center justify-between mt-3">
                   <div className="flex items-center">
                     <Clock className="w-4 h-4 text-slate-400 mr-2" />
-                    <span className="text-slate-300">{predictions.optimalTime}</span>
+                    <span className={`${isDark ? 'text-slate-300' : 'text-slate-600'}`}>
+                      {predictions.optimalTime}
+                    </span>
                   </div>
                   <span className="text-green-500 font-semibold">
                     -{predictions.predictedDrop}%
@@ -168,12 +172,14 @@ const PredictionCard: React.FC<PredictionCardProps> = ({ gasData }) => {
                 </div>
               </div>
 
-              <div className="p-4 bg-slate-700/30 rounded-lg">
+              <div className={`p-4 rounded-lg ${
+                isDark ? 'bg-slate-700/30' : 'bg-slate-100'
+              }`}>
                 <h3 className="font-semibold mb-3 flex items-center">
                   <Zap className="w-4 h-4 text-yellow-500 mr-2" />
                   Recommendations
                 </h3>
-                <ul className="space-y-2 text-slate-300">
+                <ul className={`space-y-2 ${isDark ? 'text-slate-300' : 'text-slate-600'}`}>
                   {predictions.recommendations.map((rec, index) => (
                     <li key={index} className="flex items-start">
                       <span className="text-slate-400 mr-2">•</span>
@@ -183,14 +189,18 @@ const PredictionCard: React.FC<PredictionCardProps> = ({ gasData }) => {
                 </ul>
               </div>
 
-              <div className="p-4 bg-slate-700/30 rounded-lg">
+              <div className={`p-4 rounded-lg ${
+                isDark ? 'bg-slate-700/30' : 'bg-slate-100'
+              }`}>
                 <h3 className="font-semibold mb-3 flex items-center">
                   <Activity className="w-4 h-4 text-blue-500 mr-2" />
                   Market Analysis
                 </h3>
                 <div className="space-y-3">
                   <div>
-                    <span className="text-slate-400">Market Condition: </span>
+                    <span className={`${isDark ? 'text-slate-400' : 'text-slate-500'}`}>
+                      Market Condition:{' '}
+                    </span>
                     <span className={`font-medium ${
                       predictions.marketCondition === 'bullish' ? 'text-green-500' :
                       predictions.marketCondition === 'bearish' ? 'text-red-500' :
@@ -200,8 +210,12 @@ const PredictionCard: React.FC<PredictionCardProps> = ({ gasData }) => {
                     </span>
                   </div>
                   <div>
-                    <span className="text-slate-400">Analysis: </span>
-                    <span className="text-slate-300">{predictions.graphAnalysis}</span>
+                    <span className={`${isDark ? 'text-slate-400' : 'text-slate-500'}`}>
+                      Analysis:{' '}
+                    </span>
+                    <span className={`${isDark ? 'text-slate-300' : 'text-slate-600'}`}>
+                      {predictions.graphAnalysis}
+                    </span>
                   </div>
                 </div>
               </div>
