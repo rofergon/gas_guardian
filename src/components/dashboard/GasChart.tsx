@@ -1,7 +1,8 @@
 import React, { useState } from 'react';
-import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Brush, ReferenceArea, ReferenceLine } from 'recharts';
+import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Brush, ReferenceArea } from 'recharts';
 import { useTheme } from '../../hooks/useTheme';
 import { format } from 'date-fns';
+import { motion } from 'framer-motion';
 
 interface GasChartProps {
   data: Array<{
@@ -11,90 +12,89 @@ interface GasChartProps {
   }>;
 }
 
+interface HoveredDataType {
+  time: string;
+  price: number;
+  predictedLow: number;
+}
+
 const GasChart: React.FC<GasChartProps> = ({ data }) => {
   const { isDark } = useTheme();
+  const [hoveredData, setHoveredData] = useState<HoveredDataType | null>(null);
   const [refAreaLeft, setRefAreaLeft] = useState('');
   const [refAreaRight, setRefAreaRight] = useState('');
-  const [left, setLeft] = useState('dataMin');
-  const [right, setRight] = useState('dataMax');
-  const [top] = useState('dataMax+1');
-  const [bottom] = useState('dataMin-1');
+  const [timeRange, setTimeRange] = useState({
+    left: 'dataMin',
+    right: 'dataMax',
+    top: 'dataMax+1',
+    bottom: 'dataMin-1'
+  });
 
-  // Reducir los datos a la mitad
-  const optimizedData = data.filter((_, index) => index % 2 === 0);
+  const formatTime = (timeString: string) => {
+    try {
+          // Start of Selection
+          const date = new Date(timeString);
+          return format(date, 'HH:mm');
+        } catch {
+          return timeString;
+        }
+      };
 
-  const zoom = () => {
+  const handleZoom = () => {
     if (refAreaLeft === refAreaRight || !refAreaRight) {
       setRefAreaLeft('');
       setRefAreaRight('');
       return;
     }
 
-    // xAxis domain
     if (refAreaLeft > refAreaRight) {
-      setRefAreaLeft(refAreaRight);
-      setRefAreaRight(refAreaLeft);
+      setTimeRange({
+        ...timeRange,
+        left: refAreaRight,
+        right: refAreaLeft
+      });
+    } else {
+      setTimeRange({
+        ...timeRange,
+        left: refAreaLeft,
+        right: refAreaRight
+      });
     }
 
-    setLeft(refAreaLeft);
-    setRight(refAreaRight);
     setRefAreaLeft('');
     setRefAreaRight('');
   };
 
-  const formatTime = (timeString: string) => {
-    try {
-      // Si ya está en formato HH:mm, convertirlo a fecha completa del día actual
-      if (/^([01]?[0-9]|2[0-3]):[0-5][0-9]$/.test(timeString)) {
-        const [hours, minutes] = timeString.split(':');
-        const today = new Date();
-        today.setHours(parseInt(hours, 10), parseInt(minutes, 10), 0, 0);
-        return format(today, 'HH:mm');
-      }
-
-      // Para otros formatos de fecha
-      const date = new Date(timeString);
-      if (isNaN(date.getTime())) {
-        return timeString;
-      }
-
-      // Ajustar a la zona horaria local
-      const localDate = new Date(date.getTime() - (date.getTimezoneOffset() * 60000));
-      return format(localDate, 'HH:mm');
-    } catch (error) {
-      console.error('Error formatting time:', error, timeString);
-      return timeString;
-    }
-  };
-
-  if (!data || data.length === 0) {
-    return (
-      <div className="flex items-center justify-center h-[400px]">
-        <p className={`text-${isDark ? 'slate-400' : 'slate-600'}`}>
-          Loading gas data...
-        </p>
-      </div>
-    );
-  }
-
   return (
-    <div className="relative">
-      <ResponsiveContainer width="100%" height={400}>
+    <motion.div
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      transition={{ duration: 0.5 }}
+      className="relative h-[400px]"
+    >
+      <ResponsiveContainer>
         <LineChart
-          data={optimizedData}
-          margin={{ top: 20, right: 30, left: 20, bottom: 5 }}
-          onMouseDown={(e) => e?.activeLabel && setRefAreaLeft(e.activeLabel || '')}
-          onMouseMove={(e) => refAreaLeft && e?.activeLabel && setRefAreaRight(e.activeLabel || '')}
-          onMouseUp={zoom}
+          data={data}
+          onMouseDown={e => setRefAreaLeft(e?.activeLabel || '')}
+          onMouseMove={e => {
+            if (e?.activePayload) {
+              setHoveredData(e.activePayload[0].payload);
+            }
+            if (refAreaLeft) {
+              setRefAreaRight(e?.activeLabel || '');
+            }
+          }}
+          onMouseLeave={() => setHoveredData(null)}
+          onMouseUp={handleZoom}
         >
           <CartesianGrid strokeDasharray="3 3" stroke={isDark ? '#334155' : '#e2e8f0'} />
           <XAxis 
             dataKey="time" 
-            domain={[left, right]} 
+            domain={[timeRange.left, timeRange.right]} 
             tickFormatter={formatTime}
           />
           <YAxis 
-            domain={[bottom, top]}
+            domain={[timeRange.bottom, timeRange.top]}
             tickFormatter={(value) => Number(value).toFixed(2)}
             width={65}
           />
@@ -131,17 +131,6 @@ const GasChart: React.FC<GasChartProps> = ({ data }) => {
             tickFormatter={formatTime}
           />
           
-          <ReferenceLine
-            y={data[data.length - 1]?.price}
-            stroke="#3b82f6"
-            strokeDasharray="3 3"
-            label={{
-              value: 'Current',
-              position: 'right',
-              fill: isDark ? '#94a3b8' : '#64748b'
-            }}
-          />
-          
           {refAreaLeft && refAreaRight ? (
             <ReferenceArea
               x1={refAreaLeft}
@@ -152,7 +141,28 @@ const GasChart: React.FC<GasChartProps> = ({ data }) => {
           ) : null}
         </LineChart>
       </ResponsiveContainer>
-    </div>
+      
+      {hoveredData && (
+        <motion.div
+          initial={{ opacity: 0, y: 10 }}
+          animate={{ opacity: 1, y: 0 }}
+          className={`
+            absolute top-0 right-0 p-4 rounded-lg
+            ${isDark ? 'bg-slate-800' : 'bg-white'}
+            shadow-lg border border-slate-200
+          `}
+        >
+          <div className="space-y-2">
+            <p className="text-sm text-slate-500">
+              Time: {formatTime(hoveredData.time)}
+            </p>
+            <p className="text-sm font-medium">
+              Price: {Number(hoveredData.price).toFixed(2)} Gwei
+            </p>
+          </div>
+        </motion.div>
+      )}
+    </motion.div>
   );
 };
 

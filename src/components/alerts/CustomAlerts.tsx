@@ -1,57 +1,62 @@
-import React, { useState } from 'react';
-import { Bell, Plus, Trash2, AlertTriangle } from 'lucide-react';
+import React from 'react';
+import { Trash2, AlertTriangle } from 'lucide-react';
 import { useAlerts } from '../../hooks/useAlerts';
 import { useTheme } from '../../hooks/useTheme';
+import { motion } from 'framer-motion';
 
-type AlertType = 'below' | 'above';
 
-interface NewAlertState {
-  name: string;
-  threshold: number;
-  type: AlertType;
-}
 
 export const CustomAlerts: React.FC = () => {
   const { isDark } = useTheme();
-  const { alerts, createAlert, deleteAlert, toggleAlert } = useAlerts();
-  const [isAddingAlert, setIsAddingAlert] = useState(false);
-  const [newAlert, setNewAlert] = useState<NewAlertState>({
-    name: '',
-    threshold: 30,
-    type: 'below'
-  });
+  const { alerts, deleteAlert, toggleAlert } = useAlerts();
 
-  const handleAddAlert = async (e: React.FormEvent) => {
-    e.preventDefault();
-    await createAlert({
-      ...newAlert,
-      enabled: true
-    });
-    setIsAddingAlert(false);
-    setNewAlert({ name: '', threshold: 30, type: 'below' });
+  const containerVariants = {
+    hidden: { opacity: 0, y: 20 },
+    visible: { 
+      opacity: 1, 
+      y: 0,
+      transition: {
+        duration: 0.5,
+        staggerChildren: 0.1
+      }
+    }
+  };
+
+  const itemVariants = {
+    hidden: { opacity: 0, x: -20 },
+    visible: { opacity: 1, x: 0 }
   };
 
   return (
-    <div className={`${
-      isDark ? 'bg-slate-800/50' : 'bg-white/50'
-    } rounded-xl p-6 border border-slate-200/20 backdrop-blur-sm`}>
-      <div className="flex items-center justify-between mb-6">
-        <div className="flex items-center gap-2">
-          <h2 className="text-lg font-semibold">Custom Alerts</h2>
-          <span className={`${
-            isDark ? 'bg-blue-500/10 text-blue-400' : 'bg-blue-100 text-blue-600'
-          } text-xs px-2 py-0.5 rounded-full`}>
-            {alerts.filter(a => a.enabled).length} Active
-          </span>
-        </div>
-        <Bell className="w-5 h-5 text-blue-500" />
-      </div>
-
-      <div className="space-y-3">
-        {alerts.map(alert => (
-          <div key={alert.id} className={`${
-            isDark ? 'bg-slate-700/30' : 'bg-slate-100'
-          } p-4 rounded-lg flex items-center justify-between`}>
+    <motion.div
+      initial="hidden"
+      animate="visible"
+      variants={containerVariants}
+      className={`
+        rounded-xl p-6 border backdrop-blur-sm
+        ${isDark ? 
+          'bg-slate-800/50 border-slate-700/50' : 
+          'bg-white/50 border-slate-200'
+        }
+      `}
+    >
+      <motion.div 
+        variants={itemVariants}
+        className="space-y-4"
+      >
+        {alerts.map((alert) => (
+          <motion.div
+            key={alert.id}
+            variants={itemVariants}
+            whileHover={{ scale: 1.02 }}
+            className={`
+              p-4 rounded-lg transition-all duration-200
+              ${isDark ? 
+                'bg-slate-700/30 hover:bg-slate-700/50' : 
+                'bg-slate-100 hover:bg-slate-200'
+              }
+            `}
+          >
             <div className="flex items-center gap-3">
               <AlertTriangle className={`w-5 h-5 ${
                 alert.type === 'below' ? 'text-green-500' : 'text-red-500'
@@ -90,90 +95,9 @@ export const CustomAlerts: React.FC = () => {
                 <Trash2 className="w-4 h-4" />
               </button>
             </div>
-          </div>
+          </motion.div>
         ))}
-
-        {isAddingAlert ? (
-          <form onSubmit={handleAddAlert} className="space-y-4 p-4 bg-slate-700/30 rounded-lg">
-            <div>
-              <label htmlFor="alertName" className="block text-sm font-medium mb-1">
-                Alert Name
-              </label>
-              <input
-                id="alertName"
-                type="text"
-                value={newAlert.name}
-                onChange={e => setNewAlert(prev => ({ ...prev, name: e.target.value }))}
-                className="w-full px-3 py-2 rounded-lg bg-slate-800 border border-slate-700"
-                required
-                placeholder="e.g., Low Gas Price Alert"
-              />
-            </div>
-
-            <div>
-              <label htmlFor="threshold" className="block text-sm font-medium mb-1">
-                Threshold (Gwei)
-              </label>
-              <input
-                id="threshold"
-                type="number"
-                value={newAlert.threshold}
-                onChange={e => setNewAlert(prev => ({ ...prev, threshold: Number(e.target.value) }))}
-                className="w-full px-3 py-2 rounded-lg bg-slate-800 border border-slate-700"
-                required
-                min="1"
-              />
-            </div>
-
-            <div>
-              <label htmlFor="alertType" className="block text-sm font-medium mb-1">
-                Alert Type
-              </label>
-              <select
-                id="alertType"
-                value={newAlert.type}
-                onChange={e => setNewAlert(prev => ({ 
-                  ...prev, 
-                  type: e.target.value as AlertType
-                }))}
-                className="w-full px-3 py-2 rounded-lg bg-slate-800 border border-slate-700"
-                required
-              >
-                <option value="below">Below Threshold</option>
-                <option value="above">Above Threshold</option>
-              </select>
-            </div>
-
-            <div className="flex gap-2">
-              <button
-                type="submit"
-                className="flex-1 px-4 py-2 bg-blue-500 text-white rounded-lg 
-                         hover:bg-blue-600 transition-colors"
-              >
-                Add Alert
-              </button>
-              <button
-                type="button"
-                onClick={() => setIsAddingAlert(false)}
-                className="px-4 py-2 border border-slate-700 rounded-lg 
-                         hover:bg-slate-700 transition-colors"
-              >
-                Cancel
-              </button>
-            </div>
-          </form>
-        ) : (
-          <button
-            onClick={() => setIsAddingAlert(true)}
-            className="w-full flex items-center justify-center gap-2 p-3 
-                     text-blue-500 rounded-lg border border-dashed 
-                     border-slate-700 hover:bg-slate-800 transition-colors"
-          >
-            <Plus className="w-4 h-4" />
-            Add New Alert
-          </button>
-        )}
-      </div>
-    </div>
+      </motion.div>
+    </motion.div>
   );
 }; 
