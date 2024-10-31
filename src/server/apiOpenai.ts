@@ -77,11 +77,11 @@ export async function generateAIPredictions(
     if (customPrompt) {
       messages.push({
         role: "system",
-        content: `Actúa como un analista experto en gas de Ethereum. Usa la siguiente información como contexto:
-        - Precio actual: ${historicalData.priceStats.currentPrice.toFixed(2)} Gwei
-        - Variación: ${historicalData.priceStats.percentageChange.toFixed(2)}%
-        - Rango del día: ${historicalData.priceStats.dayHighLow.low.toFixed(2)} - ${historicalData.priceStats.dayHighLow.high.toFixed(2)} Gwei
-        - Carga de red: ${historicalData.networkStats.currentLoad}%`
+        content: `Act as an expert Ethereum gas analyst. Use the following information as context:
+        - Current price: ${historicalData.priceStats.currentPrice.toFixed(2)} Gwei
+        - Variation: ${historicalData.priceStats.percentageChange.toFixed(2)}%
+        - Day range: ${historicalData.priceStats.dayHighLow.low.toFixed(2)} - ${historicalData.priceStats.dayHighLow.high.toFixed(2)} Gwei
+        - Network load: ${historicalData.networkStats.currentLoad}%`
       });
       
       messages.push({

@@ -42,12 +42,12 @@ export const aiService = {
       
       let enrichedPrompt = customPrompt;
       if (customPrompt && previousAnalysis) {
-        enrichedPrompt = `Contexto del mercado actual:
-        - Condición del mercado: ${previousAnalysis.marketCondition}
-        - Análisis previo: ${previousAnalysis.graphAnalysis}
-        - Confianza: ${previousAnalysis.confidence}/10
+        enrichedPrompt = `Current market context:
+        - Market condition: ${previousAnalysis.marketCondition}
+        - Previous analysis: ${previousAnalysis.graphAnalysis}
+        - Confidence: ${previousAnalysis.confidence}/10
         
-        Pregunta del usuario: ${customPrompt}`;
+        User question: ${customPrompt}`;
       }
       
       const predictions = await generateAIPredictions(enhancedData, undefined, enrichedPrompt);
@@ -61,14 +61,14 @@ export const aiService = {
         confidence: predictions.confidence || 0
       };
     } catch (error) {
-      console.error('Error generando predicciones:', error);
+      console.error('Error generating predictions:', error);
       return {
         predictedDrop: 15,
         optimalTime: "2:00 AM",
         recommendations: [
-          "Retrasar transacciones no urgentes",
-          "Agrupar múltiples transacciones",
-          "Considerar soluciones Layer 2"
+          "Delay non-urgent transactions",
+          "Bundle multiple transactions",
+          "Consider Layer 2 solutions"
         ],
         marketCondition: "neutral",
         graphAnalysis: "No analysis available",

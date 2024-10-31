@@ -1,14 +1,14 @@
-import React, { useState } from 'react';
+import React, { useState, useCallback } from 'react';
 import { Brain, TrendingDown, Clock, Zap, RefreshCw, Send, X, Activity } from 'lucide-react';
 import { useTheme } from '../../hooks/useTheme';
 import { aiService } from '../../services/aiService';
+import { debounce } from 'lodash';
 
 interface PredictionCardProps {
   gasData: { time: string; price: number }[];
 }
 
-
-const PredictionCard: React.FC<PredictionCardProps> = ({ gasData }) => {
+const PredictionCard: React.FC<PredictionCardProps> = React.memo(({ gasData }) => {
   const { isDark } = useTheme();
   const [predictions, setPredictions] = useState({
     predictedDrop: 0,
@@ -22,7 +22,7 @@ const PredictionCard: React.FC<PredictionCardProps> = ({ gasData }) => {
   const [customPrompt, setCustomPrompt] = useState('');
   const [showCustomInput, setShowCustomInput] = useState(false);
 
-  const generatePredictions = async (customRequest?: string) => {
+  const generatePredictions = useCallback(async (customRequest?: string) => {
     if (gasData.length === 0) {
       setError('Insufficient data to generate predictions');
       return;
@@ -45,7 +45,7 @@ const PredictionCard: React.FC<PredictionCardProps> = ({ gasData }) => {
     } finally {
       setLoading(false);
     }
-  };
+  }, [gasData]);
 
   const handleCustomRequest = (e: React.FormEvent) => {
     e.preventDefault();
@@ -53,6 +53,8 @@ const PredictionCard: React.FC<PredictionCardProps> = ({ gasData }) => {
       generatePredictions(customPrompt);
     }
   };
+
+  const debouncedSetCustomPrompt = useCallback(debounce(setCustomPrompt, 300), []);
 
   return (
     <div className={`${
@@ -109,7 +111,7 @@ const PredictionCard: React.FC<PredictionCardProps> = ({ gasData }) => {
             <input
               type="text"
               value={customPrompt}
-              onChange={(e) => setCustomPrompt(e.target.value)}
+              onChange={(e) => debouncedSetCustomPrompt(e.target.value)}
               placeholder="Ask about gas prices..."
               className={`
                 flex-1 px-3 py-1.5 rounded-lg text-sm
@@ -239,6 +241,6 @@ const PredictionCard: React.FC<PredictionCardProps> = ({ gasData }) => {
       ))}
     </div>
   );
-};
+});
 
 export default PredictionCard;
