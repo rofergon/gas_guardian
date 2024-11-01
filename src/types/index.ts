@@ -1,9 +1,4 @@
-export interface GasData {
-  time: string;
-  price: number;
-  networkActivity: number;
-  predictedLow: number;
-}
+
 
 export interface ContractData {
   name: string;

@@ -1,20 +1,43 @@
-import { Activity, Clock } from 'lucide-react';
+import { Activity, Clock, Wallet } from 'lucide-react';
 import Header from './components/layout/Header';
 import StatCard from './components/dashboard/StatCard';
-import GasChart from './components/dashboard/GasChart';
-import PredictionCard from './components/predictions/PredictionCard';
-import { CustomAlerts } from './components/alerts/CustomAlerts';
-import GasAnalysisChart from './components/analysis/GasAnalysisChart';
-import { useGasData } from './hooks/useGasData';
+import { useBlockDataChart } from './hooks/useBlockDataChart';
 import { useTheme } from './hooks/useTheme';
-import { useGasHistoryService } from './hooks/useGasHistoryService';
 
 function App() {
-  const { currentGwei, predictedLow, gasData, networkActivity } = useGasData();
+  const { chartData, loading } = useBlockDataChart();
   const { isDark } = useTheme();
 
-  // Usar el hook
-  useGasHistoryService();
+  const defaultData = {
+    price: 0,
+    predictedLow: 0,
+    networkActivity: 0,
+    utilizationPercent: 0,
+    totalTransactions: 0,
+    totalValueTransferred: 0
+  };
+
+  const latestData = chartData?.[chartData.length - 1] ?? defaultData;
+
+  if (loading) {
+    return (
+      <div className={`min-h-screen flex flex-col ${
+        isDark ? 'bg-slate-900 text-white' : 'bg-slate-50 text-slate-900'
+      }`}>
+        <Header />
+        <main className="flex-1 container mx-auto px-4 pt-20 pb-6">
+          <div className="animate-pulse space-y-6">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+              {[...Array(4)].map((_, i) => (
+                <div key={i} className="h-32 bg-slate-200 dark:bg-slate-700 rounded-xl" />
+              ))}
+            </div>
+            <div className="h-[400px] bg-slate-200 dark:bg-slate-700 rounded-xl" />
+          </div>
+        </main>
+      </div>
+    );
+  }
 
   return (
     <div className={`min-h-screen flex flex-col ${
@@ -23,59 +46,35 @@ function App() {
       <Header />
 
       <main className="flex-1 container mx-auto px-4 pt-20 pb-6 space-y-6">
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
           <StatCard
-            title="Current Gas"
-            value={`${currentGwei} Gwei`}
-            subtitle="Live price"
+            title="Gas Price"
+            value={`${latestData.price.toFixed(2)} Gwei`}
+            subtitle="Current base fee"
             icon={Activity}
             iconColor={isDark ? "text-green-500" : "text-green-600"}
           />
           <StatCard
-            title="Predicted Low"
-            value={`${predictedLow} Gwei`}
-            subtitle="Next 2 hours"
-            icon={Clock}
+            title="Network Load"
+            value={`${latestData.utilizationPercent.toFixed(1)}%`}
+            subtitle="Block utilization"
+            icon={Activity}
             iconColor={isDark ? "text-blue-500" : "text-blue-600"}
           />
           <StatCard
-            title="Network Activity"
-            value={`${networkActivity}%`}
-            subtitle="Current load"
-            icon={Activity}
+            title="Transactions"
+            value={latestData.totalTransactions.toString()}
+            subtitle="Last block"
+            icon={Clock}
             iconColor={isDark ? "text-purple-500" : "text-purple-600"}
           />
-        </div>
-
-        <div className="grid lg:grid-cols-12 gap-6 min-h-[calc(100vh-20rem)]">
-          <div className="lg:col-span-8 space-y-6 flex flex-col">
-            <div className={`${isDark ? 'bg-slate-800/50' : 'bg-white'} backdrop-blur-sm p-6 rounded-xl ${isDark ? 'border-slate-700/50' : 'border-slate-200'} border shadow-lg`}>
-              <div className="flex items-center justify-between mb-6">
-                <div>
-                  <h2 className="text-xl font-bold">Gas Price Trends</h2>
-                  <p className={`text-sm ${isDark ? 'text-slate-400' : 'text-slate-600'}`}>24-hour price history with real-time updates</p>
-                </div>
-                <div className="flex gap-2">
-                  <button className={`px-3 py-1 text-sm ${isDark ? 'bg-blue-500/10 hover:bg-blue-500/20 text-blue-500' : 'bg-blue-100 hover:bg-blue-200 text-blue-700'} rounded-lg transition-colors`}>
-                    24H
-                  </button>
-                  <button className={`px-3 py-1 text-sm ${isDark ? 'bg-slate-700/30 hover:bg-slate-700/50' : 'bg-slate-200 hover:bg-slate-300'} rounded-lg transition-colors`}>
-                    1W
-                  </button>
-                </div>
-              </div>
-              <GasChart data={gasData} />
-            </div>
-
-            <div className={`${isDark ? 'bg-slate-800/50' : 'bg-white'} backdrop-blur-sm p-6 rounded-xl ${isDark ? 'border-slate-700/50' : 'border-slate-200'} border shadow-lg`}>
-              <GasAnalysisChart />
-            </div>
-          </div>
-
-          <div className="lg:col-span-4 space-y-6">
-            <PredictionCard gasData={gasData.map(d => ({ time: d.time, price: d.price }))} />
-            <CustomAlerts />
-          </div>
+          <StatCard
+            title="Value Transferred"
+            value={`${latestData.totalValueTransferred.toFixed(2)} ETH`}
+            subtitle="Last block"
+            icon={Wallet}
+            iconColor={isDark ? "text-orange-500" : "text-orange-600"}
+          />
         </div>
       </main>
     </div>
