@@ -1,7 +1,7 @@
-import { LineChart, Line, XAxis, YAxis, Tooltip, ResponsiveContainer, CartesianGrid, ReferenceArea } from 'recharts';
+import { LineChart, Line, XAxis, YAxis, Tooltip, ResponsiveContainer, CartesianGrid } from 'recharts';
 import { useTheme } from '../../hooks/useTheme';
 import { format } from 'date-fns';
-import { useState } from 'react';
+import { TimeRange } from '../../hooks/useBlockDataChart';
 
 interface ChartData {
   time: string;
@@ -9,13 +9,14 @@ interface ChartData {
   networkLoad?: number;
   transactions?: number;
   valueTransferred?: number;
+  [key: string]: string | number | undefined;
 }
 
 interface ChartDisplayProps {
   selectedChart: string;
   formattedChartData: ChartData[];
-  timeRange: string;
-  onTimeRangeChange: (range: string) => void;
+  timeRange: TimeRange;
+  onTimeRangeChange: (range: TimeRange) => void;
 }
 
 export const ChartDisplay = ({ 
@@ -49,110 +50,36 @@ export const ChartDisplay = ({
   };
 
   const chartConfig = {
-    price: {
-      color: isDark ? "#22c55e" : "#16a34a",
-      label: "Gas Price (Gwei)",
-      gradient: "gasPrice"
-    },
-    networkLoad: {
-      color: isDark ? "#3b82f6" : "#2563eb",
-      label: "Network Load (%)",
-      gradient: "networkLoad"
-    },
-    transactions: {
-      color: isDark ? "#a855f7" : "#9333ea",
-      label: "Transactions",
-      gradient: "transactions"
-    },
-    valueTransferred: {
-      color: isDark ? "#f97316" : "#ea580c",
-      label: "Value (ETH)",
-      gradient: "valueTransferred"
-    }
-  }[selectedChart];
-
-  const [zoomState, setZoomState] = useState({
-    left: '',
-    right: '',
-    refAreaLeft: '',
-    refAreaRight: '',
     data: formattedChartData,
-    isZooming: false
-  });
-
-  const getAxisYDomain = (from: number, to: number, dataKey: string) => {
-    const refData = formattedChartData.slice(from, to);
-    let [bottom, top] = [Infinity, -Infinity];
-    
-    refData.forEach((d) => {
-      const value = d[dataKey as keyof ChartData] as number;
-      if (value > top) top = value;
-      if (value < bottom) bottom = value;
-    });
-
-    return [(bottom | 0) - 1, (top | 0) + 1];
-  };
-
-  const zoom = () => {
-    let { refAreaLeft, refAreaRight } = zoomState;
-    if (refAreaLeft === refAreaRight || !refAreaRight) {
-      setZoomState({
-        ...zoomState,
-        refAreaLeft: '',
-        refAreaRight: ''
-      });
-      return;
+    height: 400,
+    xField: 'time',
+    yField: selectedChart,
+    smooth: true,
+    animation: false,
+    color: isDark ? "#22c55e" : "#16a34a",
+    xAxis: {
+      label: {
+        formatter: (v: string) => v
+      }
+    },
+    tooltip: {
+      formatter: (data: ChartData) => {
+        return { name: selectedChart, value: data[selectedChart] };
+      }
     }
-
-    // Asegurarse de que left es menor que right
-    if (refAreaLeft > refAreaRight) {
-      [refAreaLeft, refAreaRight] = [refAreaRight, refAreaLeft];
-    }
-
-    const [left, right] = [
-      formattedChartData.findIndex(item => item.time === refAreaLeft),
-      formattedChartData.findIndex(item => item.time === refAreaRight)
-    ];
-
-    setZoomState({
-      ...zoomState,
-      refAreaLeft: '',
-      refAreaRight: '',
-      data: formattedChartData.slice(left, right + 1),
-      left: formattedChartData[left].time,
-      right: formattedChartData[right].time,
-    });
   };
-
-  if (!selectedChart || !formattedChartData) return null;
 
   return (
-    <div className={`mt-6 ${isDark ? 'bg-slate-800/50' : 'bg-white'} p-6 rounded-xl h-[500px] shadow-sm`}>
+    <div className="bg-white dark:bg-slate-800 rounded-xl p-4 shadow-sm">
       <div className="flex justify-between items-center mb-4">
         <h3 className={`text-lg font-medium ${isDark ? 'text-slate-200' : 'text-slate-800'}`}>
-          {chartConfig?.label} History
+          {selectedChart} History
         </h3>
         <div className="flex gap-2 items-center">
-          {zoomState.data !== formattedChartData && (
-            <button
-              onClick={() => setZoomState({
-                ...zoomState,
-                data: formattedChartData,
-                left: '',
-                right: '',
-                refAreaLeft: '',
-                refAreaRight: '',
-                isZooming: false
-              })}
-              className={`px-3 py-1 rounded bg-blue-500 text-white hover:bg-blue-600`}
-            >
-              Reset Zoom
-            </button>
-          )}
           {timeRanges.map(({ value, label }) => (
             <button
               key={value}
-              onClick={() => onTimeRangeChange(value)}
+              onClick={() => onTimeRangeChange(value as TimeRange)}
               className={`px-3 py-1 rounded ${
                 timeRange === value
                   ? isDark 
@@ -170,24 +97,8 @@ export const ChartDisplay = ({
       </div>
       <ResponsiveContainer width="100%" height={560}>
         <LineChart
-          data={zoomState.data}
+          data={formattedChartData}
           margin={{ right: 30, left: 20, top: 10, bottom: 130 }}
-          onMouseDown={e => {
-            if (!e) return;
-            setZoomState({
-              ...zoomState,
-              refAreaLeft: e.activeLabel || '',
-              isZooming: true
-            });
-          }}
-          onMouseMove={e => {
-            if (!e || !zoomState.isZooming) return;
-            setZoomState({
-              ...zoomState,
-              refAreaRight: e.activeLabel || ''
-            });
-          }}
-          onMouseUp={zoom}
         >
           <CartesianGrid 
             strokeDasharray="3 3"  // Hace la línea punteada
@@ -244,19 +155,11 @@ export const ChartDisplay = ({
           <Line
             type="monotone"
             dataKey={selectedChart}
-            stroke={chartConfig?.color}
+            stroke={chartConfig.color}
             strokeWidth={2}
             dot={false}
-            name={chartConfig?.label}
+            name={selectedChart}
           />
-          {zoomState.refAreaLeft && zoomState.refAreaRight ? (
-            <ReferenceArea
-              x1={zoomState.refAreaLeft}
-              x2={zoomState.refAreaRight}
-              strokeOpacity={0.3}
-              fill={isDark ? "rgba(255,255,255,0.1)" : "rgba(0,0,0,0.1)"}
-            />
-          ) : null}
         </LineChart>
       </ResponsiveContainer>
     </div>

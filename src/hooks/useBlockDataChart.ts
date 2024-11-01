@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { createClient } from '@libsql/client';
 
-interface BlockChartData {
+export interface BlockChartData {
   time: string;
   price: number;
   predictedLow: number;
@@ -20,7 +20,7 @@ interface BlockChartData {
   medianPriorityFee: number;
 }
 
-type TimeRange = '2h' | '4h' | '8h' | '24h' | '1w';
+export type TimeRange = '2h' | '4h' | '8h' | '24h' | '1w';
 
 export const useBlockDataChart = (timeRange: TimeRange = '24h') => {
   const [chartData, setChartData] = useState<BlockChartData[]>([]);

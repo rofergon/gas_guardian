@@ -3,9 +3,10 @@ import { Brain, TrendingDown, Clock, Zap, RefreshCw, Send, X, Activity } from 'l
 import { useTheme } from '../../hooks/useTheme';
 import { aiService } from '../../services/aiService';
 import { debounce } from 'lodash';
+import type { BlockChartData } from '../../hooks/useBlockDataChart';
 
 interface PredictionCardProps {
-  gasData: { time: string; price: number }[];
+  gasData: BlockChartData[];
 }
 
 const PredictionCard: React.FC<PredictionCardProps> = React.memo(({ gasData }) => {
