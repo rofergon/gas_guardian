@@ -1,5 +1,6 @@
 import { LineChart, Line, XAxis, YAxis, Tooltip, ResponsiveContainer } from 'recharts';
 import { useTheme } from '../../hooks/useTheme';
+import { format } from 'date-fns';
 
 interface ChartData {
   time: string;
@@ -16,6 +17,20 @@ interface ChartDisplayProps {
 
 export const ChartDisplay = ({ selectedChart, formattedChartData }: ChartDisplayProps) => {
   const { isDark } = useTheme();
+
+  const formatXAxisTick = (timestamp: string) => {
+    try {
+      // Asumiendo que timestamp viene en formato "YYYY-MM-DD HH:mm:ss"
+      const date = new Date(timestamp);
+      if (isNaN(date.getTime())) {
+        return timestamp;
+      }
+      return format(date, 'HH:mm');
+    } catch (error) {
+      console.error('Error formatting date:', error);
+      return timestamp;
+    }
+  };
 
   const chartConfig = {
     price: {
@@ -71,6 +86,8 @@ export const ChartDisplay = ({ selectedChart, formattedChartData }: ChartDisplay
             dataKey="time" 
             stroke={isDark ? "#94a3b8" : "#475569"}
             fontSize={12}
+            tickFormatter={formatXAxisTick}
+            interval="preserveStartEnd"
           />
           <YAxis 
             stroke={isDark ? "#94a3b8" : "#475569"}

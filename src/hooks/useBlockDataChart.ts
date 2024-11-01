@@ -54,8 +54,8 @@ export const useBlockDataChart = () => {
             avg_priority_fee,
             median_priority_fee
           FROM block_data 
+          WHERE timestamp >= datetime('now', '-24 hours')
           ORDER BY timestamp DESC 
-          LIMIT 100
         `,
         args: []
       });

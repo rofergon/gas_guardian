@@ -6,6 +6,14 @@ import { useTheme } from './hooks/useTheme';
 import { useState } from 'react';
 import { ChartDisplay } from './components/dashboard/ChartDisplay';
 
+interface BlockData {
+  time: string;
+  price: number;
+  utilizationPercent: number;
+  totalTransactions: number;
+  totalValueTransferred: number;
+}
+
 function App() {
   const { chartData, loading } = useBlockDataChart();
   const { isDark } = useTheme();
@@ -22,7 +30,7 @@ function App() {
 
   const latestData = chartData?.[chartData.length - 1] ?? defaultData;
 
-  const formatChartData = (data: any[]) => {
+  const formatChartData = (data: BlockData[]) => {
     console.log('Raw Chart Data:', data);
     
     const formatted = data.map(item => ({
