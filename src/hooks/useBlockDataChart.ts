@@ -47,8 +47,12 @@ export const useBlockDataChart = (timeRange: TimeRange = '24h') => {
   const processDataPoints = (data: BlockChartData[], maxPoints: number = 500) => {
     if (data.length <= maxPoints) return data;
     
-    const skipFactor = Math.ceil(data.length / maxPoints);
-    return data.filter((_, index) => index % skipFactor === 0);
+    const lastDataPoint = data[data.length - 1];
+    const remainingData = data.slice(0, -1);
+    const skipFactor = Math.ceil(remainingData.length / (maxPoints - 1));
+    
+    const sampledData = remainingData.filter((_, index) => index % skipFactor === 0);
+    return [...sampledData, lastDataPoint];
   };
 
   const fetchBlockData = async () => {
