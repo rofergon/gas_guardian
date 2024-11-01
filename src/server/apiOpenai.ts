@@ -6,37 +6,30 @@ const openai = new OpenAI({
 });
 
 interface EnhancedHistoricalData {
-  firstRecord: {
-    time: string;
+  currentData: {
     price: number;
+    networkActivity: number;
+    gasUsed: number;
+    utilizationPercent: number;
+    totalTransactions: number;
+    networkCongestion: string;
+    networkTrend: string;
+    avgGasPrice: number;
+    medianGasPrice: number;
+    avgPriorityFee: number;
+    medianPriorityFee: number;
   };
-  lastRecord: {
-    time: string;
-    price: number;
-  };
-  networkStats: {
-    currentLoad: number;        
-    averageGasUsed: number;    
-    pendingTransactions: number;
-  };
-  priceStats: {
-    percentageChange: number;   
-    predictedLow: number;       
-    currentPrice: number;       
+  stats: {
+    percentageChange: number;
     dayHighLow: {
       high: number;
       low: number;
     };
   };
-  timeContext: {
-    dayOfWeek: number;         
-    hourOfDay: number;         
-    isWeekend: boolean;        // Weekend behavior
-  }
 }
 
 export async function generateAIPredictions(
-  historicalData: EnhancedHistoricalData, 
+  historicalData: EnhancedHistoricalData,
   chartImageBase64?: string,
   customPrompt?: string
 ) {
@@ -78,10 +71,13 @@ export async function generateAIPredictions(
       messages.push({
         role: "system",
         content: `Act as an expert Ethereum gas analyst. Use the following information as context:
-        - Current price: ${historicalData.priceStats.currentPrice.toFixed(2)} Gwei
-        - Variation: ${historicalData.priceStats.percentageChange.toFixed(2)}%
-        - Day range: ${historicalData.priceStats.dayHighLow.low.toFixed(2)} - ${historicalData.priceStats.dayHighLow.high.toFixed(2)} Gwei
-        - Network load: ${historicalData.networkStats.currentLoad}%`
+        - Current price: ${historicalData.currentData.price.toFixed(2)} Gwei
+        - Network Congestion: ${historicalData.currentData.networkCongestion}
+        - Network Trend: ${historicalData.currentData.networkTrend}
+        - Network Activity: ${historicalData.currentData.networkActivity}%
+        - Average Gas Price: ${historicalData.currentData.avgGasPrice} Gwei
+        - Median Priority Fee: ${historicalData.currentData.medianPriorityFee} Gwei
+        - Total Transactions: ${historicalData.currentData.totalTransactions}`
       });
       
       messages.push({
@@ -89,30 +85,37 @@ export async function generateAIPredictions(
         content: customPrompt
       });
     } else {
-      const prompt = `Analyze the Ethereum gas data and provided chart:
+      const prompt = `Analyze the following Ethereum gas data and provide specific recommendations:
 
-1. PRICES AND TRENDS:
-- Current price: ${historicalData.priceStats.currentPrice.toFixed(2)} Gwei
-- Variation: ${historicalData.priceStats.percentageChange.toFixed(2)}%
-- Day range: ${historicalData.priceStats.dayHighLow.low.toFixed(2)} - ${historicalData.priceStats.dayHighLow.high.toFixed(2)} Gwei
+1. CURRENT DATA:
+- Base Price: ${historicalData.currentData.price.toFixed(2)} Gwei
+- 24h Trend: ${historicalData.stats.percentageChange}%
+- Day Range: High ${historicalData.stats.dayHighLow.high} / Low ${historicalData.stats.dayHighLow.low} Gwei
+- Current Utilization: ${historicalData.currentData.utilizationPercent}%
 
-2. CHART PATTERNS:
-- Identify visible trends
-- Analyze support and resistance points
-- Identify volatility patterns
+2. NETWORK METRICS:
+- Total Transactions: ${historicalData.currentData.totalTransactions}
+- Congestion: ${historicalData.currentData.networkCongestion}
+- Average Priority Fee: ${historicalData.currentData.avgPriorityFee} Gwei
 
-3. NETWORK METRICS:
-- Current load: ${historicalData.networkStats.currentLoad}%
-- Average gas: ${historicalData.networkStats.averageGasUsed.toFixed(2)} Gwei
+SPECIFIC INSTRUCTIONS:
+1. Compare current price with day range to determine if it's a good time
+2. Analyze utilization trend to predict congestion
+3. Consider priority fee for urgency recommendations
+4. Provide specific timing based on historical patterns
 
-IMPORTANT: Reply ONLY with a valid JSON object with this structure:
+Respond ONLY with a JSON object using this structure:
 {
-  "predictedDrop": <number between 5 and 30>,
-  "optimalTime": "<HH:MM AM/PM> (these hours should be when gas was lowest in the last 24h)>",
-  "confidence": <number between 1 and 10 based on data and chart analysis>,
-  "recommendations": [<array of 3 strings with clever recommendations, these recommendations should include all provided data>],
-  "marketCondition": "<bullish|bearish|neutral>",
-  "graphAnalysis": "<brief analysis of the visible pattern in the chart explaining network behavior and reasoning behind marketCondition result and give advice about ETH trading>"
+  "predictedDrop": <number based on difference between current and minimum price>,
+  "optimalTime": "<HH:MM AM/PM based on utilization patterns>",
+  "confidence": <1-10 based on data consistency>,
+  "recommendations": [
+    "<specific timing recommendation>",
+    "<priority fee recommendation>",
+    "<transaction type recommendation>"
+  ],
+  "marketCondition": "<bullish if trend > 5% | bearish if < -5% | neutral>",
+  "graphAnalysis": "<detailed analysis of current metrics and trends>"
 }`;
 
       messages.push({

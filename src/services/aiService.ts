@@ -1,4 +1,5 @@
 import { generateAIPredictions } from '../server/apiOpenai';
+import type { BlockChartData } from '../hooks/useBlockDataChart';
 
 interface AIPrediction {
   predictedDrop: number;
@@ -11,43 +12,59 @@ interface AIPrediction {
 
 export const aiService = {
   async generatePredictions(
-    gasData: { time: string; price: number }[], 
+    gasData: BlockChartData[], 
     customPrompt?: string,
     previousAnalysis?: AIPrediction
   ): Promise<AIPrediction> {
     try {
+      const lastRecord = gasData[gasData.length - 1];
+      
       const enhancedData = {
-        firstRecord: gasData[0],
-        lastRecord: gasData[gasData.length - 1],
-        networkStats: {
-          currentLoad: Math.min(100, Math.floor(gasData[gasData.length - 1].price / 2)),
-          averageGasUsed: calculateAverageGas(gasData),
-          pendingTransactions: 0
+        currentData: {
+          price: lastRecord.price,
+          networkActivity: lastRecord.networkActivity,
+          gasUsed: lastRecord.gasUsed,
+          utilizationPercent: lastRecord.utilizationPercent,
+          totalTransactions: lastRecord.totalTransactions,
+          networkCongestion: lastRecord.networkCongestion,
+          networkTrend: lastRecord.networkTrend,
+          avgGasPrice: lastRecord.avgGasPrice,
+          medianGasPrice: lastRecord.medianGasPrice,
+          avgPriorityFee: lastRecord.avgPriorityFee,
+          medianPriorityFee: lastRecord.medianPriorityFee
         },
-        priceStats: {
-          currentPrice: gasData[gasData.length - 1].price,
+        stats: {
           percentageChange: calculatePercentageChange(gasData),
-          predictedLow: Math.min(...gasData.map(d => d.price)) * 0.9,
           dayHighLow: {
             high: Math.max(...gasData.map(d => d.price)),
             low: Math.min(...gasData.map(d => d.price))
           }
-        },
-        timeContext: {
-          hourOfDay: new Date().getHours(),
-          dayOfWeek: new Date().getDay(),
-          isWeekend: [0, 6].includes(new Date().getDay())
         }
       };
       
-      let enrichedPrompt = customPrompt;
-      if (customPrompt && previousAnalysis) {
-        enrichedPrompt = `Current market context:
-        - Market condition: ${previousAnalysis.marketCondition}
-        - Previous analysis: ${previousAnalysis.graphAnalysis}
-        - Confidence: ${previousAnalysis.confidence}/10
+      let enrichedPrompt = '';
+      if (customPrompt) {
+        const lastHourData = gasData.slice(-4); // last 4 entries (1 hour)
+        const avgUtilization = lastHourData.reduce((acc, curr) => acc + curr.utilizationPercent, 0) / lastHourData.length;
         
-        User question: ${customPrompt}`;
+        enrichedPrompt = `Current Ethereum Network Context:
+        - Current Price: ${lastRecord.price} Gwei
+        - Average Utilization Last Hour: ${avgUtilization.toFixed(2)}%
+        - Network Trend: ${lastRecord.networkTrend}
+        - Congestion: ${lastRecord.networkCongestion}
+        - Priority Fee: ${lastRecord.avgPriorityFee} Gwei
+        
+        Previous Analysis:
+        - Market Condition: ${previousAnalysis?.marketCondition || 'N/A'}
+        - Previous Confidence: ${previousAnalysis?.confidence || 'N/A'}/10
+        
+        User Question: ${customPrompt}
+        
+        Please provide specific analysis considering:
+        1. Current network data
+        2. Last hour trend
+        3. Practical and specific recommendations
+        4. Optimal timing if relevant`;
       }
       
       const predictions = await generateAIPredictions(enhancedData, undefined, enrichedPrompt);
@@ -78,15 +95,9 @@ export const aiService = {
   }
 };
 
-function calculatePercentageChange(data: { price: number }[]): number {
+function calculatePercentageChange(data: BlockChartData[]): number {
   if (data.length < 2) return 0;
   const firstPrice = data[0].price;
   const lastPrice = data[data.length - 1].price;
   return ((lastPrice - firstPrice) / firstPrice) * 100;
-}
-
-function calculateAverageGas(data: { price: number }[]): number {
-  if (data.length === 0) return 0;
-  const sum = data.reduce((acc, curr) => acc + curr.price, 0);
-  return sum / data.length;
 }

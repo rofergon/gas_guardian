@@ -1,7 +1,7 @@
 import { Activity, Clock, Wallet } from 'lucide-react';
 import Header from './components/layout/Header';
 import StatCard from './components/dashboard/StatCard';
-import { useBlockDataChart } from './hooks/useBlockDataChart';
+import { TimeRange, useBlockDataChart } from './hooks/useBlockDataChart';
 import { useTheme } from './hooks/useTheme';
 import { useState } from 'react';
 import { ChartDisplay } from './components/dashboard/ChartDisplay';
@@ -16,7 +16,7 @@ interface ChartDataItem {
 }
 
 function App() {
-  const [timeRange, setTimeRange] = useState<string>('24h');
+  const [timeRange, setTimeRange] = useState<TimeRange>('24h');
   const { chartData, loading } = useBlockDataChart(timeRange as '2h' | '4h' | '8h' | '24h' | '1w');
   const { isDark } = useTheme();
   const [selectedChart, setSelectedChart] = useState<string | null>(null);
@@ -123,7 +123,29 @@ function App() {
         <PredictionCard 
           gasData={formattedChartData.map(item => ({
             time: item.time,
-            price: item.price
+            price: item.price,
+            predictedLow: 0,
+            networkActivity: item.networkLoad,
+            gasUsed: 0,
+            utilizationPercent: item.networkLoad,
+            totalTransactions: item.transactions,
+            totalValueTransferred: item.valueTransferred,
+            blockNumber: 0,
+            baseFee: item.price,
+            priorityFee: 0,
+            burntFees: 0,
+            rewards: 0,
+            eip1559Transactions: 0,
+            legacyTransactions: 0,
+            networkCongestion: 'low',
+            networkTrend: 'stable' as const,
+            predictedHigh: 0,
+            predictedMedian: 0,
+            confidence: 0,
+            avgGasPrice: 0,
+            medianGasPrice: 0,
+            avgPriorityFee: 0,
+            medianPriorityFee: 0
           }))} 
         />
       </main>
