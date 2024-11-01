@@ -17,13 +17,15 @@ interface ChartDisplayProps {
   formattedChartData: ChartData[];
   timeRange: TimeRange;
   onTimeRangeChange: (range: TimeRange) => void;
+  currentBlockNumber?: number;
 }
 
 export const ChartDisplay = ({ 
-  selectedChart, 
+  selectedChart = 'price',
   formattedChartData, 
   timeRange, 
-  onTimeRangeChange 
+  onTimeRangeChange,
+  currentBlockNumber = 0
 }: ChartDisplayProps) => {
   const { isDark } = useTheme();
 
@@ -70,12 +72,28 @@ export const ChartDisplay = ({
   };
 
   return (
-    <div className="bg-white dark:bg-slate-800 rounded-xl p-4 shadow-sm">
+    <div className={`${
+      isDark ? 'bg-slate-800/50' : 'bg-white/95'
+    } backdrop-blur-sm p-4 rounded-xl border ${isDark ? 'border-slate-700/50' : 'border-slate-200'}`}>
       <div className="flex justify-between items-center mb-4">
-        <h3 className={`text-lg font-medium ${isDark ? 'text-slate-200' : 'text-slate-800'}`}>
-          {selectedChart} History
-        </h3>
+        <div>
+          <h3 className={`text-lg font-medium ${isDark ? 'text-slate-200' : 'text-slate-800'}`}>
+            Gas Price History
+          </h3>
+          <div className="flex items-center gap-4 mt-1">
+            <span className={`text-xs ${isDark ? 'text-slate-400' : 'text-slate-600'}`}>
+              Block #{currentBlockNumber}
+            </span>
+            <div className="flex items-center gap-2">
+              <span className={`text-xs ${isDark ? 'text-slate-400' : 'text-slate-600'}`}>
+                Real Time Data Streaming
+              </span>
+              <div className="w-2 h-2 rounded-full bg-red-500 animate-pulse-fast" />
+            </div>
+          </div>
+        </div>
         <div className="flex gap-2 items-center">
+
           {timeRanges.map(({ value, label }) => (
             <button
               key={value}
@@ -100,10 +118,17 @@ export const ChartDisplay = ({
           data={formattedChartData}
           margin={{ right: 30, left: 20, top: 10, bottom: 10 }}
         >
+          <rect
+            x={0}
+            y={0}
+            width="100%"
+            height="100%"
+            fill={isDark ? '#1e293b' : '#ffffff'}
+          />
           <CartesianGrid 
-            strokeDasharray="3 3"  // Hace la línea punteada
-            stroke={isDark ? "#334155" : "#e2e8f0"}  // Color de la cuadrícula según el tema
-            vertical={false}  // Opcional: si solo quieres líneas horizontales
+            strokeDasharray="3 3"
+            stroke={isDark ? "#334155" : "#e2e8f0"}
+            vertical={false}
           />
           <defs>
             <linearGradient id="gasPrice" x1="0" y1="0" x2="0" y2="1">

@@ -64,10 +64,11 @@ const StatCard: React.FC<StatCardProps> = ({
           <h3 className={`text-2xl font-bold tracking-tight ${isDark ? 'text-white' : 'text-slate-800'}`}>
             {value}
           </h3>
-          <div className="flex items-center space-x-2">
+          <div className="flex items-center gap-2">
             <span className={`text-xs ${isDark ? 'text-slate-400' : 'text-slate-500'}`}>
               {subtitle}
             </span>
+            <div className="w-1.5 h-1.5 rounded-full bg-red-500 animate-pulse-fast" />
             {trend && (
               <span className={`
                 flex items-center text-xs font-medium

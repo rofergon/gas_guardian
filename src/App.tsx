@@ -19,7 +19,7 @@ function App() {
   const [timeRange, setTimeRange] = useState<TimeRange>('24h');
   const { chartData, loading } = useBlockDataChart(timeRange as '2h' | '4h' | '8h' | '24h' | '1w');
   const { isDark } = useTheme();
-  const [selectedChart, setSelectedChart] = useState<string | null>(null);
+  const [selectedChart, setSelectedChart] = useState<string>('price');
 
   const defaultData = {
     price: 0,
@@ -118,6 +118,7 @@ function App() {
           formattedChartData={formattedChartData}
           timeRange={timeRange}
           onTimeRangeChange={setTimeRange}
+          currentBlockNumber={latestData.blockNumber}
         />
 
         <PredictionCard 

@@ -18,6 +18,7 @@ export interface BlockChartData {
   medianGasPrice: number;
   avgPriorityFee: number;
   medianPriorityFee: number;
+  blockNumber: number;
 }
 
 export type TimeRange = '2h' | '4h' | '8h' | '24h' | '1w';
@@ -43,6 +44,13 @@ export const useBlockDataChart = (timeRange: TimeRange = '24h') => {
     return offsets[range];
   };
 
+  const processDataPoints = (data: BlockChartData[], maxPoints: number = 500) => {
+    if (data.length <= maxPoints) return data;
+    
+    const skipFactor = Math.ceil(data.length / maxPoints);
+    return data.filter((_, index) => index % skipFactor === 0);
+  };
+
   const fetchBlockData = async () => {
     try {
       console.log('Fetching block data...');
@@ -50,6 +58,7 @@ export const useBlockDataChart = (timeRange: TimeRange = '24h') => {
       const result = await client.execute({
         sql: `
           SELECT 
+            block_number,
             timestamp as time,
             base_fee_gwei as price,
             base_fee_gwei * 0.85 as predicted_low,
@@ -77,6 +86,7 @@ export const useBlockDataChart = (timeRange: TimeRange = '24h') => {
       
       const formattedData = result.rows.map(row => ({
         time: row.time as string,
+        blockNumber: Number(row.block_number),
         price: Number(row.price),
         predictedLow: Number(row.predicted_low),
         networkActivity: Number(row.network_activity),
@@ -96,7 +106,8 @@ export const useBlockDataChart = (timeRange: TimeRange = '24h') => {
 
       console.log('Formatted Data:', formattedData);
       
-      setChartData(formattedData.reverse());
+      const processedData = processDataPoints(formattedData.reverse());
+      setChartData(processedData);
       setLoading(false);
     } catch (err) {
       console.error('Error fetching data:', err);
