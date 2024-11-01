@@ -22,7 +22,7 @@ async function main(params) {
             throw new Error('Incomplete data in payload');
         }
   
-        // Extraer y procesar valores necesarios
+        // Extract and process required values
         const block_number = data.blockInfo.number;
         const block_hash = data.blockInfo.hash;
         const timestamp = data.blockInfo.timestamp;
@@ -51,7 +51,7 @@ async function main(params) {
         const legacy_transactions = data.transactionStats.types.legacy || 0;
         const total_value_transferred = parseFloat(data.transactionStats.totalValueTransferred);
   
-        // Construir la sentencia SQL y los parámetros
+        // Build SQL statement and parameters
         const sql = `INSERT INTO block_data (
             block_number, block_hash, timestamp, base_fee_gwei, gas_limit, gas_used, utilization_percent,
             network_congestion, network_trend, avg_gas_price, median_gas_price, avg_priority_fee,
@@ -78,45 +78,45 @@ async function main(params) {
             total_value_transferred
         ];
   
-        // Construir el cuerpo de la solicitud
+        // Build request body
         const requestBody = {
             statements: [
                 {
                     q: sql,
-                    params: paramsArray // Cambiado 'args' a 'params'
+                    params: paramsArray // Changed 'args' to 'params'
                 }
             ]
         };
   
-        // Construir la URL del endpoint
+        // Build endpoint URL
         const endpoint = TURSO_URL.replace('libsql://', 'https://');
   
-        // Configurar los encabezados de la solicitud
+        // Configure request headers
         const headers = {
             'Authorization': `Bearer ${TURSO_AUTH_TOKEN}`,
             'Content-Type': 'application/json'
         };
   
-        // Log de los encabezados y cuerpo de la solicitud
+        // Log headers and request body
         console.log('Sent headers:', headers);
         console.log('Request body:', JSON.stringify(requestBody, null, 2));
   
-        // Realizar la solicitud POST a Turso
+        // Make POST request to Turso
         const response = await axios.post(endpoint, requestBody, { headers });
   
-        // Log de la respuesta
+        // Log response
         console.log('Turso response:', response.data);
   
-        // Retornar resultado exitoso
+        // Return successful result
         return {
             message: 'Data inserted successfully',
             response: response.data
         };
     } catch (error) {
-        // Manejar y registrar errores
+        // Handle and log errors
         console.error('Error inserting data:', error);
   
-        // Preparar detalles del error
+        // Prepare error details
         const errorDetails = {
             message: error.message,
             stack: error.stack
@@ -128,7 +128,7 @@ async function main(params) {
             errorDetails.headers = error.response.headers;
         }
   
-        // Retornar el error detallado
+        // Return detailed error
         return {
             message: 'Error inserting data',
             error: errorDetails
