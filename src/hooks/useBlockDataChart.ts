@@ -20,7 +20,9 @@ interface BlockChartData {
   medianPriorityFee: number;
 }
 
-export const useBlockDataChart = () => {
+type TimeRange = '2h' | '4h' | '8h' | '24h' | '1w';
+
+export const useBlockDataChart = (timeRange: TimeRange = '24h') => {
   const [chartData, setChartData] = useState<BlockChartData[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -29,6 +31,17 @@ export const useBlockDataChart = () => {
     url: import.meta.env.VITE_TURSO_URL as string,
     authToken: import.meta.env.VITE_TURSO_AUTH_TOKEN as string,
   });
+
+  const getTimeOffset = (range: TimeRange) => {
+    const offsets = {
+      '2h': '-2 hours',
+      '4h': '-4 hours',
+      '8h': '-8 hours',
+      '24h': '-24 hours',
+      '1w': '-7 days'
+    };
+    return offsets[range];
+  };
 
   const fetchBlockData = async () => {
     try {
@@ -54,10 +67,10 @@ export const useBlockDataChart = () => {
             avg_priority_fee,
             median_priority_fee
           FROM block_data 
-          WHERE timestamp >= datetime('now', '-24 hours')
+          WHERE timestamp >= datetime('now', ?)
           ORDER BY timestamp DESC 
         `,
-        args: []
+        args: [getTimeOffset(timeRange)]
       });
 
       console.log('SQL Result:', result);
@@ -97,7 +110,7 @@ export const useBlockDataChart = () => {
     fetchBlockData();
     const interval = setInterval(fetchBlockData, 15000);
     return () => clearInterval(interval);
-  }, []);
+  }, [timeRange]);
 
   return { chartData, loading, error };
 }; 

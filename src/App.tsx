@@ -6,16 +6,9 @@ import { useTheme } from './hooks/useTheme';
 import { useState } from 'react';
 import { ChartDisplay } from './components/dashboard/ChartDisplay';
 
-interface BlockData {
-  time: string;
-  price: number;
-  utilizationPercent: number;
-  totalTransactions: number;
-  totalValueTransferred: number;
-}
-
 function App() {
-  const { chartData, loading } = useBlockDataChart();
+  const [timeRange, setTimeRange] = useState<string>('24h');
+  const { chartData, loading } = useBlockDataChart(timeRange as '2h' | '4h' | '8h' | '24h' | '1w');
   const { isDark } = useTheme();
   const [selectedChart, setSelectedChart] = useState<string | null>(null);
 
@@ -30,7 +23,7 @@ function App() {
 
   const latestData = chartData?.[chartData.length - 1] ?? defaultData;
 
-  const formatChartData = (data: BlockData[]) => {
+  const formatChartData = (data: any[]) => {
     console.log('Raw Chart Data:', data);
     
     const formatted = data.map(item => ({
@@ -114,6 +107,8 @@ function App() {
         <ChartDisplay 
           selectedChart={selectedChart || ''} 
           formattedChartData={formattedChartData}
+          timeRange={timeRange}
+          onTimeRangeChange={setTimeRange}
         />
       </main>
     </div>

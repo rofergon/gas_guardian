@@ -13,10 +13,25 @@ interface ChartData {
 interface ChartDisplayProps {
   selectedChart: string;
   formattedChartData: ChartData[];
+  timeRange: string;
+  onTimeRangeChange: (range: string) => void;
 }
 
-export const ChartDisplay = ({ selectedChart, formattedChartData }: ChartDisplayProps) => {
+export const ChartDisplay = ({ 
+  selectedChart, 
+  formattedChartData, 
+  timeRange, 
+  onTimeRangeChange 
+}: ChartDisplayProps) => {
   const { isDark } = useTheme();
+
+  const timeRanges = [
+    { value: '2h', label: '2H' },
+    { value: '4h', label: '4H' },
+    { value: '8h', label: '8H' },
+    { value: '24h', label: '24H' },
+    { value: '1w', label: '1W' },
+  ];
 
   const formatXAxisTick = (timestamp: string) => {
     try {
@@ -59,9 +74,30 @@ export const ChartDisplay = ({ selectedChart, formattedChartData }: ChartDisplay
 
   return (
     <div className={`mt-6 ${isDark ? 'bg-slate-800/50' : 'bg-white'} p-6 rounded-xl h-[500px] shadow-sm`}>
-      <h3 className={`text-lg font-medium mb-4 ${isDark ? 'text-slate-200' : 'text-slate-800'}`}>
-        {chartConfig?.label} History
-      </h3>
+      <div className="flex justify-between items-center mb-4">
+        <h3 className={`text-lg font-medium ${isDark ? 'text-slate-200' : 'text-slate-800'}`}>
+          {chartConfig?.label} History
+        </h3>
+        <div className="flex gap-2">
+          {timeRanges.map(({ value, label }) => (
+            <button
+              key={value}
+              onClick={() => onTimeRangeChange(value)}
+              className={`px-3 py-1 rounded ${
+                timeRange === value
+                  ? isDark 
+                    ? 'bg-slate-600 text-white' 
+                    : 'bg-slate-200 text-slate-800'
+                  : isDark
+                    ? 'text-slate-400 hover:bg-slate-700'
+                    : 'text-slate-600 hover:bg-slate-100'
+              }`}
+            >
+              {label}
+            </button>
+          ))}
+        </div>
+      </div>
       <ResponsiveContainer width="100%" height={560}>
         <LineChart
           data={formattedChartData}
