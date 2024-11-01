@@ -32,6 +32,8 @@ export const useBlockDataChart = () => {
 
   const fetchBlockData = async () => {
     try {
+      console.log('Fetching block data...');
+      
       const result = await client.execute({
         sql: `
           SELECT 
@@ -58,6 +60,8 @@ export const useBlockDataChart = () => {
         args: []
       });
 
+      console.log('SQL Result:', result);
+      
       const formattedData = result.rows.map(row => ({
         time: row.time as string,
         price: Number(row.price),
@@ -77,15 +81,19 @@ export const useBlockDataChart = () => {
         medianPriorityFee: Number(row.median_priority_fee)
       }));
 
+      console.log('Formatted Data:', formattedData);
+      
       setChartData(formattedData.reverse());
       setLoading(false);
     } catch (err) {
+      console.error('Error fetching data:', err);
       setError(err instanceof Error ? err.message : 'Error fetching data');
       setLoading(false);
     }
   };
 
   useEffect(() => {
+    console.log('useEffect triggered');
     fetchBlockData();
     const interval = setInterval(fetchBlockData, 15000);
     return () => clearInterval(interval);
