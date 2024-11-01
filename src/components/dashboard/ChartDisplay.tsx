@@ -1,4 +1,4 @@
-import { LineChart, Line, XAxis, YAxis, Tooltip, ResponsiveContainer } from 'recharts';
+import { LineChart, Line, XAxis, YAxis, Tooltip, ResponsiveContainer, CartesianGrid } from 'recharts';
 import { useTheme } from '../../hooks/useTheme';
 import { format } from 'date-fns';
 
@@ -58,12 +58,25 @@ export const ChartDisplay = ({ selectedChart, formattedChartData }: ChartDisplay
   if (!selectedChart || !formattedChartData) return null;
 
   return (
-    <div className={`mt-6 ${isDark ? 'bg-slate-800/50' : 'bg-white'} p-6 rounded-xl h-[400px] shadow-sm`}>
+    <div className={`mt-6 ${isDark ? 'bg-slate-800/50' : 'bg-white'} p-6 rounded-xl h-[500px] shadow-sm`}>
       <h3 className={`text-lg font-medium mb-4 ${isDark ? 'text-slate-200' : 'text-slate-800'}`}>
         {chartConfig?.label} History
       </h3>
-      <ResponsiveContainer width="100%" height="100%">
-        <LineChart data={formattedChartData}>
+      <ResponsiveContainer width="100%" height={560}>
+        <LineChart
+          data={formattedChartData}
+          margin={{ 
+            right: 30,
+            left: 20,
+            top: 10,
+            bottom: 130
+          }}
+        >
+          <CartesianGrid 
+            strokeDasharray="3 3"  // Hace la línea punteada
+            stroke={isDark ? "#334155" : "#e2e8f0"}  // Color de la cuadrícula según el tema
+            vertical={false}  // Opcional: si solo quieres líneas horizontales
+          />
           <defs>
             <linearGradient id="gasPrice" x1="0" y1="0" x2="0" y2="1">
               <stop offset="5%" stopColor="#22c55e" stopOpacity={0.3}/>
@@ -87,7 +100,11 @@ export const ChartDisplay = ({ selectedChart, formattedChartData }: ChartDisplay
             stroke={isDark ? "#94a3b8" : "#475569"}
             fontSize={12}
             tickFormatter={formatXAxisTick}
-            interval="preserveStartEnd"
+            interval={Math.ceil(formattedChartData.length / 14)}
+            angle={-15}
+            textAnchor="end"
+            height={60}
+            dy={10}
           />
           <YAxis 
             stroke={isDark ? "#94a3b8" : "#475569"}
