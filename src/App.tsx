@@ -13,6 +13,7 @@ interface ChartDataItem {
   utilizationPercent: number;
   totalTransactions: number;
   totalValueTransferred: number;
+  blockNumber: number;
 }
 
 function App() {
@@ -40,7 +41,8 @@ function App() {
       price: Number(item.price),
       networkLoad: Number(item.utilizationPercent),
       transactions: Number(item.totalTransactions),
-      valueTransferred: Number(item.totalValueTransferred)
+      valueTransferred: Number(item.totalValueTransferred),
+      blockNumber: Number(item.blockNumber)
     }));
     
     console.log('Formatted Chart Data:', formatted);

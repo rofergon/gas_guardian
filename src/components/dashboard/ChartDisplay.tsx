@@ -14,7 +14,14 @@ interface ChartData {
 
 interface ChartDisplayProps {
   selectedChart: string;
-  formattedChartData: ChartData[];
+  formattedChartData: {
+    time: string;
+    price: number;
+    networkLoad: number;
+    transactions: number;
+    valueTransferred: number;
+    blockNumber: number;
+  }[];
   timeRange: TimeRange;
   onTimeRangeChange: (range: TimeRange) => void;
   currentBlockNumber?: number;
@@ -164,17 +171,22 @@ export const ChartDisplay = ({
             fontSize={12}
           />
           <Tooltip
-            contentStyle={{
-              backgroundColor: isDark ? '#1e293b' : '#ffffff',
-              border: isDark ? 'none' : '1px solid #e2e8f0',
-              borderRadius: '0.5rem',
-              boxShadow: '0 4px 6px -1px rgb(0 0 0 / 0.1)',
-            }}
-            labelStyle={{
-              color: isDark ? '#94a3b8' : '#475569',
-            }}
-            itemStyle={{
-              color: isDark ? '#ffffff' : '#1e293b',
+            content={({ active, payload }) => {
+              if (active && payload && payload.length) {
+                const data = payload[0].payload;
+                return (
+                  <div className={`p-3 rounded-lg ${isDark ? 'bg-slate-800' : 'bg-white'} shadow-lg border border-slate-200/20`}>
+                    <p className="text-sm text-slate-400">{data.time}</p>
+                    <p className="text-sm font-medium">
+                      Block: {data.blockNumber}
+                    </p>
+                    <p className="text-sm font-medium">
+                      {selectedChart}: {payload[0].value}
+                    </p>
+                  </div>
+                );
+              }
+              return null;
             }}
           />
           <Line
