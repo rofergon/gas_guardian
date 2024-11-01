@@ -119,6 +119,7 @@ function App() {
           timeRange={timeRange}
           onTimeRangeChange={setTimeRange}
           currentBlockNumber={latestData.blockNumber}
+          showSecondaryChart={true}
         />
 
         <PredictionCard 

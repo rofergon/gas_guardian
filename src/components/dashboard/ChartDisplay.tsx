@@ -18,6 +18,7 @@ interface ChartDisplayProps {
   timeRange: TimeRange;
   onTimeRangeChange: (range: TimeRange) => void;
   currentBlockNumber?: number;
+  showSecondaryChart?: boolean;
 }
 
 export const ChartDisplay = ({ 
@@ -25,7 +26,8 @@ export const ChartDisplay = ({
   formattedChartData, 
   timeRange, 
   onTimeRangeChange,
-  currentBlockNumber = 0
+  currentBlockNumber = 0,
+  showSecondaryChart = false
 }: ChartDisplayProps) => {
   const { isDark } = useTheme();
 
@@ -113,80 +115,140 @@ export const ChartDisplay = ({
           ))}
         </div>
       </div>
-      <ResponsiveContainer width="100%" height={500}>
-        <LineChart
-          data={formattedChartData}
-          margin={{ right: 30, left: 20, top: 10, bottom: 10 }}
-        >
-          <rect
-            x={0}
-            y={0}
-            width="100%"
-            height="100%"
-            fill={isDark ? '#1e293b' : '#ffffff'}
-          />
-          <CartesianGrid 
-            strokeDasharray="3 3"
-            stroke={isDark ? "#334155" : "#e2e8f0"}
-            vertical={false}
-          />
-          <defs>
-            <linearGradient id="gasPrice" x1="0" y1="0" x2="0" y2="1">
-              <stop offset="5%" stopColor="#22c55e" stopOpacity={0.3}/>
-              <stop offset="95%" stopColor="#22c55e" stopOpacity={0}/>
-            </linearGradient>
-            <linearGradient id="networkLoad" x1="0" y1="0" x2="0" y2="1">
-              <stop offset="5%" stopColor="#3b82f6" stopOpacity={0.3}/>
-              <stop offset="95%" stopColor="#3b82f6" stopOpacity={0}/>
-            </linearGradient>
-            <linearGradient id="transactions" x1="0" y1="0" x2="0" y2="1">
-              <stop offset="5%" stopColor="#a855f7" stopOpacity={0.3}/>
-              <stop offset="95%" stopColor="#a855f7" stopOpacity={0}/>
-            </linearGradient>
-            <linearGradient id="valueTransferred" x1="0" y1="0" x2="0" y2="1">
-              <stop offset="5%" stopColor="#f97316" stopOpacity={0.3}/>
-              <stop offset="95%" stopColor="#f97316" stopOpacity={0}/>
-            </linearGradient>
-          </defs>
-          <XAxis 
-            dataKey="time" 
-            stroke={isDark ? "#94a3b8" : "#475569"}
-            fontSize={12}
-            tickFormatter={formatXAxisTick}
-            interval={Math.ceil(formattedChartData.length / 14)}
-            angle={-15}
-            textAnchor="end"
-            height={60}
-            dy={10}
-          />
-          <YAxis 
-            stroke={isDark ? "#94a3b8" : "#475569"}
-            fontSize={12}
-          />
-          <Tooltip
-            contentStyle={{
-              backgroundColor: isDark ? '#1e293b' : '#ffffff',
-              border: isDark ? 'none' : '1px solid #e2e8f0',
-              borderRadius: '0.5rem',
-              boxShadow: '0 4px 6px -1px rgb(0 0 0 / 0.1)',
-            }}
-            labelStyle={{
-              color: isDark ? '#94a3b8' : '#475569',
-            }}
-            itemStyle={{
-              color: isDark ? '#ffffff' : '#1e293b',
-            }}
-          />
-          <Line
-            type="monotone"
-            dataKey={selectedChart}
-            stroke={chartConfig.color}
-            strokeWidth={2}
-            dot={false}
-            name={selectedChart}
-          />
-        </LineChart>
-      </ResponsiveContainer>
+      <div className="grid gap-4">
+        <ResponsiveContainer width="100%" height={500}>
+          <LineChart
+            data={formattedChartData}
+            margin={{ right: 30, left: 20, top: 10, bottom: 10 }}
+          >
+            <rect
+              x={0}
+              y={0}
+              width="100%"
+              height="100%"
+              fill={isDark ? '#1e293b' : '#ffffff'}
+            />
+            <CartesianGrid 
+              strokeDasharray="3 3"
+              stroke={isDark ? "#334155" : "#e2e8f0"}
+              vertical={false}
+            />
+            <defs>
+              <linearGradient id="gasPrice" x1="0" y1="0" x2="0" y2="1">
+                <stop offset="5%" stopColor="#22c55e" stopOpacity={0.3}/>
+                <stop offset="95%" stopColor="#22c55e" stopOpacity={0}/>
+              </linearGradient>
+              <linearGradient id="networkLoad" x1="0" y1="0" x2="0" y2="1">
+                <stop offset="5%" stopColor="#3b82f6" stopOpacity={0.3}/>
+                <stop offset="95%" stopColor="#3b82f6" stopOpacity={0}/>
+              </linearGradient>
+              <linearGradient id="transactions" x1="0" y1="0" x2="0" y2="1">
+                <stop offset="5%" stopColor="#a855f7" stopOpacity={0.3}/>
+                <stop offset="95%" stopColor="#a855f7" stopOpacity={0}/>
+              </linearGradient>
+              <linearGradient id="valueTransferred" x1="0" y1="0" x2="0" y2="1">
+                <stop offset="5%" stopColor="#f97316" stopOpacity={0.3}/>
+                <stop offset="95%" stopColor="#f97316" stopOpacity={0}/>
+              </linearGradient>
+            </defs>
+            <XAxis 
+              dataKey="time" 
+              stroke={isDark ? "#94a3b8" : "#475569"}
+              fontSize={12}
+              tickFormatter={formatXAxisTick}
+              interval={Math.ceil(formattedChartData.length / 14)}
+              angle={-15}
+              textAnchor="end"
+              height={60}
+              dy={10}
+            />
+            <YAxis 
+              stroke={isDark ? "#94a3b8" : "#475569"}
+              fontSize={12}
+            />
+            <Tooltip
+              contentStyle={{
+                backgroundColor: isDark ? '#1e293b' : '#ffffff',
+                border: isDark ? 'none' : '1px solid #e2e8f0',
+                borderRadius: '0.5rem',
+                boxShadow: '0 4px 6px -1px rgb(0 0 0 / 0.1)',
+              }}
+              labelStyle={{
+                color: isDark ? '#94a3b8' : '#475569',
+              }}
+              itemStyle={{
+                color: isDark ? '#ffffff' : '#1e293b',
+              }}
+            />
+            <Line
+              type="monotone"
+              dataKey={selectedChart}
+              stroke={chartConfig.color}
+              strokeWidth={2}
+              dot={false}
+              name={selectedChart}
+            />
+          </LineChart>
+        </ResponsiveContainer>
+
+        {showSecondaryChart && (
+          <ResponsiveContainer width="100%" height={300}>
+            <LineChart
+              data={formattedChartData}
+              margin={{ right: 30, left: 20, top: 10, bottom: 10 }}
+            >
+              <rect
+                x={0}
+                y={0}
+                width="100%"
+                height="100%"
+                fill={isDark ? '#1e293b' : '#ffffff'}
+              />
+              <CartesianGrid 
+                strokeDasharray="3 3"
+                stroke={isDark ? "#334155" : "#e2e8f0"}
+                vertical={false}
+              />
+              <XAxis 
+                dataKey="time" 
+                stroke={isDark ? "#94a3b8" : "#475569"}
+                fontSize={12}
+                tickFormatter={formatXAxisTick}
+                interval={Math.ceil(formattedChartData.length / 14)}
+                angle={-15}
+                textAnchor="end"
+                height={60}
+                dy={10}
+              />
+              <YAxis 
+                stroke={isDark ? "#94a3b8" : "#475569"}
+                fontSize={12}
+              />
+              <Tooltip
+                contentStyle={{
+                  backgroundColor: isDark ? '#1e293b' : '#ffffff',
+                  border: isDark ? 'none' : '1px solid #e2e8f0',
+                  borderRadius: '0.5rem',
+                }}
+                labelStyle={{
+                  color: isDark ? '#94a3b8' : '#475569',
+                }}
+                itemStyle={{
+                  color: isDark ? '#ffffff' : '#1e293b',
+                }}
+              />
+              <Line
+                type="monotone"
+                dataKey="networkLoad"
+                stroke="#3b82f6"
+                strokeWidth={2}
+                dot={false}
+                name="Network Load"
+              />
+            </LineChart>
+          </ResponsiveContainer>
+        )}
+      </div>
     </div>
   );
 };
