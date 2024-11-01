@@ -19,7 +19,7 @@ function App() {
   const [timeRange, setTimeRange] = useState<TimeRange>('24h');
   const { chartData, loading } = useBlockDataChart(timeRange as '2h' | '4h' | '8h' | '24h' | '1w');
   const { isDark } = useTheme();
-  const [selectedChart, setSelectedChart] = useState<string>('price');
+  const [selectedChart, setSelectedChart] = useState<string | null>('price');
 
   const defaultData = {
     price: 0,
@@ -103,6 +103,9 @@ function App() {
             subtitle="Last block"
             icon={Clock}
             iconColor={isDark ? "text-purple-500" : "text-purple-600"}
+            chartData={selectedChart === 'transactions' ? formattedChartData : undefined}
+            dataKey="transactions"
+            onClick={() => setSelectedChart(selectedChart === 'transactions' ? null : 'transactions')}
           />
           <StatCard
             title="Value Transferred"
@@ -110,16 +113,18 @@ function App() {
             subtitle="Last block"
             icon={Wallet}
             iconColor={isDark ? "text-orange-500" : "text-orange-600"}
+            chartData={selectedChart === 'valueTransferred' ? formattedChartData : undefined}
+            dataKey="valueTransferred"
+            onClick={() => setSelectedChart(selectedChart === 'valueTransferred' ? null : 'valueTransferred')}
           />
         </div>
         
         <ChartDisplay 
-          selectedChart={selectedChart || ''} 
+          selectedChart={selectedChart || 'price'} 
           formattedChartData={formattedChartData}
           timeRange={timeRange}
           onTimeRangeChange={setTimeRange}
           currentBlockNumber={latestData.blockNumber}
-          showSecondaryChart={true}
         />
 
         <PredictionCard 

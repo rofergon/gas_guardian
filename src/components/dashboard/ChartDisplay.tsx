@@ -18,7 +18,6 @@ interface ChartDisplayProps {
   timeRange: TimeRange;
   onTimeRangeChange: (range: TimeRange) => void;
   currentBlockNumber?: number;
-  showSecondaryChart?: boolean;
 }
 
 export const ChartDisplay = ({ 
@@ -26,8 +25,7 @@ export const ChartDisplay = ({
   formattedChartData, 
   timeRange, 
   onTimeRangeChange,
-  currentBlockNumber = 0,
-  showSecondaryChart = false
+  currentBlockNumber = 0
 }: ChartDisplayProps) => {
   const { isDark } = useTheme();
 
@@ -53,24 +51,24 @@ export const ChartDisplay = ({
     }
   };
 
-  const chartConfig = {
-    data: formattedChartData,
-    height: 400,
-    xField: 'time',
-    yField: selectedChart,
-    smooth: true,
-    animation: false,
-    color: isDark ? "#22c55e" : "#16a34a",
-    xAxis: {
-      label: {
-        formatter: (v: string) => v
-      }
-    },
-    tooltip: {
-      formatter: (data: ChartData) => {
-        return { name: selectedChart, value: data[selectedChart] };
-      }
-    }
+  const getChartTitle = () => {
+    const titles = {
+      'price': 'Gas Price History',
+      'networkLoad': 'Network Load History',
+      'transactions': 'Transactions History',
+      'valueTransferred': 'Value Transferred History'
+    };
+    return titles[selectedChart as keyof typeof titles] || 'Chart History';
+  };
+
+  const getChartColor = () => {
+    const colors = {
+      'price': '#22c55e',
+      'networkLoad': '#3b82f6',
+      'transactions': '#a855f7',
+      'valueTransferred': '#f97316'
+    };
+    return colors[selectedChart as keyof typeof colors] || '#22c55e';
   };
 
   return (
@@ -80,7 +78,7 @@ export const ChartDisplay = ({
       <div className="flex justify-between items-center mb-4">
         <div>
           <h3 className={`text-lg font-medium ${isDark ? 'text-slate-200' : 'text-slate-800'}`}>
-            Gas Price History
+            {getChartTitle()}
           </h3>
           <div className="flex items-center gap-4 mt-1">
             <span className={`text-xs ${isDark ? 'text-slate-400' : 'text-slate-600'}`}>
@@ -115,140 +113,81 @@ export const ChartDisplay = ({
           ))}
         </div>
       </div>
-      <div className="grid gap-4">
-        <ResponsiveContainer width="100%" height={500}>
-          <LineChart
-            data={formattedChartData}
-            margin={{ right: 30, left: 20, top: 10, bottom: 10 }}
-          >
-            <rect
-              x={0}
-              y={0}
-              width="100%"
-              height="100%"
-              fill={isDark ? '#1e293b' : '#ffffff'}
-            />
-            <CartesianGrid 
-              strokeDasharray="3 3"
-              stroke={isDark ? "#334155" : "#e2e8f0"}
-              vertical={false}
-            />
-            <defs>
-              <linearGradient id="gasPrice" x1="0" y1="0" x2="0" y2="1">
-                <stop offset="5%" stopColor="#22c55e" stopOpacity={0.3}/>
-                <stop offset="95%" stopColor="#22c55e" stopOpacity={0}/>
-              </linearGradient>
-              <linearGradient id="networkLoad" x1="0" y1="0" x2="0" y2="1">
-                <stop offset="5%" stopColor="#3b82f6" stopOpacity={0.3}/>
-                <stop offset="95%" stopColor="#3b82f6" stopOpacity={0}/>
-              </linearGradient>
-              <linearGradient id="transactions" x1="0" y1="0" x2="0" y2="1">
-                <stop offset="5%" stopColor="#a855f7" stopOpacity={0.3}/>
-                <stop offset="95%" stopColor="#a855f7" stopOpacity={0}/>
-              </linearGradient>
-              <linearGradient id="valueTransferred" x1="0" y1="0" x2="0" y2="1">
-                <stop offset="5%" stopColor="#f97316" stopOpacity={0.3}/>
-                <stop offset="95%" stopColor="#f97316" stopOpacity={0}/>
-              </linearGradient>
-            </defs>
-            <XAxis 
-              dataKey="time" 
-              stroke={isDark ? "#94a3b8" : "#475569"}
-              fontSize={12}
-              tickFormatter={formatXAxisTick}
-              interval={Math.ceil(formattedChartData.length / 14)}
-              angle={-15}
-              textAnchor="end"
-              height={60}
-              dy={10}
-            />
-            <YAxis 
-              stroke={isDark ? "#94a3b8" : "#475569"}
-              fontSize={12}
-            />
-            <Tooltip
-              contentStyle={{
-                backgroundColor: isDark ? '#1e293b' : '#ffffff',
-                border: isDark ? 'none' : '1px solid #e2e8f0',
-                borderRadius: '0.5rem',
-                boxShadow: '0 4px 6px -1px rgb(0 0 0 / 0.1)',
-              }}
-              labelStyle={{
-                color: isDark ? '#94a3b8' : '#475569',
-              }}
-              itemStyle={{
-                color: isDark ? '#ffffff' : '#1e293b',
-              }}
-            />
-            <Line
-              type="monotone"
-              dataKey={selectedChart}
-              stroke={chartConfig.color}
-              strokeWidth={2}
-              dot={false}
-              name={selectedChart}
-            />
-          </LineChart>
-        </ResponsiveContainer>
-
-        {showSecondaryChart && (
-          <ResponsiveContainer width="100%" height={300}>
-            <LineChart
-              data={formattedChartData}
-              margin={{ right: 30, left: 20, top: 10, bottom: 10 }}
-            >
-              <rect
-                x={0}
-                y={0}
-                width="100%"
-                height="100%"
-                fill={isDark ? '#1e293b' : '#ffffff'}
-              />
-              <CartesianGrid 
-                strokeDasharray="3 3"
-                stroke={isDark ? "#334155" : "#e2e8f0"}
-                vertical={false}
-              />
-              <XAxis 
-                dataKey="time" 
-                stroke={isDark ? "#94a3b8" : "#475569"}
-                fontSize={12}
-                tickFormatter={formatXAxisTick}
-                interval={Math.ceil(formattedChartData.length / 14)}
-                angle={-15}
-                textAnchor="end"
-                height={60}
-                dy={10}
-              />
-              <YAxis 
-                stroke={isDark ? "#94a3b8" : "#475569"}
-                fontSize={12}
-              />
-              <Tooltip
-                contentStyle={{
-                  backgroundColor: isDark ? '#1e293b' : '#ffffff',
-                  border: isDark ? 'none' : '1px solid #e2e8f0',
-                  borderRadius: '0.5rem',
-                }}
-                labelStyle={{
-                  color: isDark ? '#94a3b8' : '#475569',
-                }}
-                itemStyle={{
-                  color: isDark ? '#ffffff' : '#1e293b',
-                }}
-              />
-              <Line
-                type="monotone"
-                dataKey="networkLoad"
-                stroke="#3b82f6"
-                strokeWidth={2}
-                dot={false}
-                name="Network Load"
-              />
-            </LineChart>
-          </ResponsiveContainer>
-        )}
-      </div>
+      <ResponsiveContainer width="100%" height={500}>
+        <LineChart
+          data={formattedChartData}
+          margin={{ right: 30, left: 20, top: 10, bottom: 10 }}
+        >
+          <rect
+            x={0}
+            y={0}
+            width="100%"
+            height="100%"
+            fill={isDark ? '#1e293b' : '#ffffff'}
+          />
+          <CartesianGrid 
+            strokeDasharray="3 3"
+            stroke={isDark ? "#334155" : "#e2e8f0"}
+            vertical={false}
+          />
+          <defs>
+            <linearGradient id="gasPrice" x1="0" y1="0" x2="0" y2="1">
+              <stop offset="5%" stopColor="#22c55e" stopOpacity={0.3}/>
+              <stop offset="95%" stopColor="#22c55e" stopOpacity={0}/>
+            </linearGradient>
+            <linearGradient id="networkLoad" x1="0" y1="0" x2="0" y2="1">
+              <stop offset="5%" stopColor="#3b82f6" stopOpacity={0.3}/>
+              <stop offset="95%" stopColor="#3b82f6" stopOpacity={0}/>
+            </linearGradient>
+            <linearGradient id="transactions" x1="0" y1="0" x2="0" y2="1">
+              <stop offset="5%" stopColor="#a855f7" stopOpacity={0.3}/>
+              <stop offset="95%" stopColor="#a855f7" stopOpacity={0}/>
+            </linearGradient>
+            <linearGradient id="valueTransferred" x1="0" y1="0" x2="0" y2="1">
+              <stop offset="5%" stopColor="#f97316" stopOpacity={0.3}/>
+              <stop offset="95%" stopColor="#f97316" stopOpacity={0}/>
+            </linearGradient>
+          </defs>
+          <XAxis 
+            dataKey="time" 
+            stroke={isDark ? "#94a3b8" : "#475569"}
+            fontSize={12}
+            tickFormatter={formatXAxisTick}
+            interval={Math.ceil(formattedChartData.length / 14)}
+            angle={-15}
+            textAnchor="end"
+            height={60}
+            dy={10}
+          />
+          <YAxis 
+            stroke={isDark ? "#94a3b8" : "#475569"}
+            fontSize={12}
+          />
+          <Tooltip
+            contentStyle={{
+              backgroundColor: isDark ? '#1e293b' : '#ffffff',
+              border: isDark ? 'none' : '1px solid #e2e8f0',
+              borderRadius: '0.5rem',
+              boxShadow: '0 4px 6px -1px rgb(0 0 0 / 0.1)',
+            }}
+            labelStyle={{
+              color: isDark ? '#94a3b8' : '#475569',
+            }}
+            itemStyle={{
+              color: isDark ? '#ffffff' : '#1e293b',
+            }}
+          />
+          <Line
+            type="monotone"
+            dataKey={selectedChart}
+            stroke={getChartColor()}
+            strokeWidth={2}
+            dot={false}
+            name={selectedChart}
+            fill={`url(#${selectedChart})`}
+          />
+        </LineChart>
+      </ResponsiveContainer>
     </div>
   );
 };
