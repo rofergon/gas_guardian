@@ -95,10 +95,10 @@ export const ChartDisplay = ({
           ))}
         </div>
       </div>
-      <ResponsiveContainer width="100%" height={560}>
+      <ResponsiveContainer width="100%" height={500}>
         <LineChart
           data={formattedChartData}
-          margin={{ right: 30, left: 20, top: 10, bottom: 130 }}
+          margin={{ right: 30, left: 20, top: 10, bottom: 10 }}
         >
           <CartesianGrid 
             strokeDasharray="3 3"  // Hace la línea punteada
