@@ -5,6 +5,15 @@ import { useBlockDataChart } from './hooks/useBlockDataChart';
 import { useTheme } from './hooks/useTheme';
 import { useState } from 'react';
 import { ChartDisplay } from './components/dashboard/ChartDisplay';
+import PredictionCard from './components/predictions/PredictionCard';
+
+interface ChartDataItem {
+  time: string;
+  price: number;
+  utilizationPercent: number;
+  totalTransactions: number;
+  totalValueTransferred: number;
+}
 
 function App() {
   const [timeRange, setTimeRange] = useState<string>('24h');
@@ -23,7 +32,7 @@ function App() {
 
   const latestData = chartData?.[chartData.length - 1] ?? defaultData;
 
-  const formatChartData = (data: any[]) => {
+  const formatChartData = (data: ChartDataItem[]) => {
     console.log('Raw Chart Data:', data);
     
     const formatted = data.map(item => ({
@@ -109,6 +118,13 @@ function App() {
           formattedChartData={formattedChartData}
           timeRange={timeRange}
           onTimeRangeChange={setTimeRange}
+        />
+
+        <PredictionCard 
+          gasData={formattedChartData.map(item => ({
+            time: item.time,
+            price: item.price
+          }))} 
         />
       </main>
     </div>

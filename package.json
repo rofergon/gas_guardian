@@ -16,6 +16,7 @@
   "dependencies": {
     "@emotion/react": "^11.13.3",
     "@emotion/styled": "^11.13.0",
+    "@heroicons/react": "^2.1.5",
     "@libsql/client": "^0.14.0",
     "@netlify/functions": "^2.8.2",
     "@reown/appkit": "^1.2.0",
