@@ -149,7 +149,7 @@ function App() {
                 <WhalesLeaderboard />
               </div>
 
-              <div className="w-[350px] shrink-0 space-y-6">
+              <div className="w-[450px] shrink-0 space-y-6">
                 <PredictionCard gasData={formattedChartData.map(item => ({
                   time: item.time,
                   price: item.price,
