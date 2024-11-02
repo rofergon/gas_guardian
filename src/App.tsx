@@ -8,6 +8,7 @@ import { ChartDisplay } from './components/dashboard/ChartDisplay';
 import PredictionCard from './components/predictions/PredictionCard';
 import WhalesLeaderboard from './components/whales/WhalesLeaderboard';
 import { useWhalesData } from './hooks/useWhalesData';
+import CustomAlerts from './components/alerts/CustomAlerts';
 
 interface ChartDataItem {
   time: string;
@@ -137,7 +138,8 @@ function App() {
             <WhalesLeaderboard />
           </div>
 
-          <div className="w-[400px] shrink-0">
+          <div className="w-[400px] shrink-0 space-y-6">
+            <CustomAlerts />
             <PredictionCard gasData={formattedChartData.map(item => ({
               time: item.time,
               price: item.price,
