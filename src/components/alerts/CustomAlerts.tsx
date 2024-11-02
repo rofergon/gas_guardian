@@ -1,6 +1,8 @@
 import { Bell, Trash2 } from 'lucide-react';
 import { useState } from 'react';
 import { useTheme } from '../../hooks/useTheme';
+import { useGasAlerts } from '../../hooks/useGasAlerts';
+import { useBlockDataChart } from '../../hooks/useBlockDataChart';
 
 interface Alert {
   id: string;
@@ -20,6 +22,12 @@ const CustomAlerts = () => {
     name: '',
     threshold: 0
   });
+
+  // Obtener los datos del chart que ya incluyen el base fee
+  const { chartData } = useBlockDataChart('2h');
+  
+  // Usar el hook de alertas con los datos del chart
+  useGasAlerts(alerts, chartData);
 
   const handleDeleteAlert = (id: string) => {
     setAlerts(alerts.filter(alert => alert.id !== id));

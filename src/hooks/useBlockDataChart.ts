@@ -86,8 +86,6 @@ export const useBlockDataChart = (timeRange: TimeRange = '24h') => {
         args: [getTimeOffset(timeRange)]
       });
 
-      console.log('SQL Result:', result);
-      
       const formattedData = result.rows.map(row => ({
         time: row.time as string,
         blockNumber: Number(row.block_number),
@@ -108,8 +106,6 @@ export const useBlockDataChart = (timeRange: TimeRange = '24h') => {
         medianPriorityFee: Number(row.median_priority_fee)
       }));
 
-      console.log('Formatted Data:', formattedData);
-      
       const processedData = processDataPoints(formattedData.reverse());
       setChartData(processedData);
       setLoading(false);
@@ -121,7 +117,6 @@ export const useBlockDataChart = (timeRange: TimeRange = '24h') => {
   };
 
   useEffect(() => {
-    console.log('useEffect triggered');
     fetchBlockData();
     const interval = setInterval(fetchBlockData, 10000);
     return () => clearInterval(interval);

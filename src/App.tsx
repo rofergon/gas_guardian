@@ -9,6 +9,7 @@ import PredictionCard from './components/predictions/PredictionCard';
 import WhalesLeaderboard from './components/whales/WhalesLeaderboard';
 import { useWhalesData } from './hooks/useWhalesData';
 import CustomAlerts from './components/alerts/CustomAlerts';
+import { Toaster } from 'react-hot-toast';
 
 interface ChartDataItem {
   time: string;
@@ -38,8 +39,6 @@ function App() {
   const latestData = chartData?.[chartData.length - 1] ?? defaultData;
 
   const formatChartData = (data: ChartDataItem[]) => {
-    console.log('Raw Chart Data:', data);
-    
     const formatted = data.map(item => ({
       time: new Date(item.time).toLocaleTimeString(),
       price: Number(item.price),
@@ -49,7 +48,6 @@ function App() {
       blockNumber: Number(item.blockNumber)
     }));
     
-    console.log('Formatted Chart Data:', formatted);
     return formatted;
   };
 
@@ -76,100 +74,112 @@ function App() {
   }
 
   return (
-    <div className={`min-h-screen flex flex-col ${
-      isDark ? 'bg-slate-900 text-white' : 'bg-slate-50 text-slate-900'
-    }`}>
-      <Header />
+    <>
+      <Toaster
+        position="top-right"
+        toastOptions={{
+          duration: 5000,
+          style: {
+            background: '#1a1b1e',
+            color: '#fff',
+          },
+        }}
+      />
+      <div className={`min-h-screen flex flex-col ${
+        isDark ? 'bg-slate-900 text-white' : 'bg-slate-50 text-slate-900'
+      }`}>
+        <Header />
 
-      <main className="flex-1 container mx-auto px-4 pt-20 pb-6">
-        <div className="flex gap-6">
-          <div className="flex-1 space-y-6">
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-              <StatCard
-                title="Gas Price"
-                value={`${latestData.price.toFixed(2)} Gwei`}
-                subtitle="Current base fee"
-                icon={Activity}
-                iconColor={isDark ? "text-green-500" : "text-green-600"}
-                chartData={selectedChart === 'price' ? formattedChartData : undefined}
-                dataKey="price"
-                onClick={() => setSelectedChart(selectedChart === 'price' ? null : 'price')}
+        <main className="flex-1 container mx-auto px-4 pt-20 pb-6">
+          <div className="flex gap-6">
+            <div className="flex-1 space-y-6">
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+                <StatCard
+                  title="Gas Price"
+                  value={`${latestData.price.toFixed(2)} Gwei`}
+                  subtitle="Current base fee"
+                  icon={Activity}
+                  iconColor={isDark ? "text-green-500" : "text-green-600"}
+                  chartData={selectedChart === 'price' ? formattedChartData : undefined}
+                  dataKey="price"
+                  onClick={() => setSelectedChart(selectedChart === 'price' ? null : 'price')}
+                />
+                <StatCard
+                  title="Network Load"
+                  value={`${latestData.utilizationPercent.toFixed(1)}%`}
+                  subtitle="Block utilization"
+                  icon={Activity}
+                  iconColor={isDark ? "text-blue-500" : "text-blue-600"}
+                  chartData={selectedChart === 'networkLoad' ? formattedChartData : undefined}
+                  dataKey="networkLoad"
+                  onClick={() => setSelectedChart(selectedChart === 'networkLoad' ? null : 'networkLoad')}
+                />
+                <StatCard
+                  title="Transactions"
+                  value={latestData.totalTransactions.toString()}
+                  subtitle="Last block"
+                  icon={Clock}
+                  iconColor={isDark ? "text-purple-500" : "text-purple-600"}
+                  chartData={selectedChart === 'transactions' ? formattedChartData : undefined}
+                  dataKey="transactions"
+                  onClick={() => setSelectedChart(selectedChart === 'transactions' ? null : 'transactions')}
+                />
+                <StatCard
+                  title="Value Transferred"
+                  value={`${latestData.totalValueTransferred.toFixed(2)} ETH`}
+                  subtitle="Last block"
+                  icon={Wallet}
+                  iconColor={isDark ? "text-orange-500" : "text-orange-600"}
+                  chartData={selectedChart === 'valueTransferred' ? formattedChartData : undefined}
+                  dataKey="valueTransferred"
+                  onClick={() => setSelectedChart(selectedChart === 'valueTransferred' ? null : 'valueTransferred')}
+                />
+              </div>
+              
+              <ChartDisplay 
+                selectedChart={selectedChart || 'price'} 
+                formattedChartData={formattedChartData}
+                timeRange={timeRange}
+                onTimeRangeChange={setTimeRange}
+                currentBlockNumber={latestData.blockNumber}
               />
-              <StatCard
-                title="Network Load"
-                value={`${latestData.utilizationPercent.toFixed(1)}%`}
-                subtitle="Block utilization"
-                icon={Activity}
-                iconColor={isDark ? "text-blue-500" : "text-blue-600"}
-                chartData={selectedChart === 'networkLoad' ? formattedChartData : undefined}
-                dataKey="networkLoad"
-                onClick={() => setSelectedChart(selectedChart === 'networkLoad' ? null : 'networkLoad')}
-              />
-              <StatCard
-                title="Transactions"
-                value={latestData.totalTransactions.toString()}
-                subtitle="Last block"
-                icon={Clock}
-                iconColor={isDark ? "text-purple-500" : "text-purple-600"}
-                chartData={selectedChart === 'transactions' ? formattedChartData : undefined}
-                dataKey="transactions"
-                onClick={() => setSelectedChart(selectedChart === 'transactions' ? null : 'transactions')}
-              />
-              <StatCard
-                title="Value Transferred"
-                value={`${latestData.totalValueTransferred.toFixed(2)} ETH`}
-                subtitle="Last block"
-                icon={Wallet}
-                iconColor={isDark ? "text-orange-500" : "text-orange-600"}
-                chartData={selectedChart === 'valueTransferred' ? formattedChartData : undefined}
-                dataKey="valueTransferred"
-                onClick={() => setSelectedChart(selectedChart === 'valueTransferred' ? null : 'valueTransferred')}
-              />
+
+              <WhalesLeaderboard />
             </div>
-            
-            <ChartDisplay 
-              selectedChart={selectedChart || 'price'} 
-              formattedChartData={formattedChartData}
-              timeRange={timeRange}
-              onTimeRangeChange={setTimeRange}
-              currentBlockNumber={latestData.blockNumber}
-            />
 
-            <WhalesLeaderboard />
+            <div className="w-[400px] shrink-0 space-y-6">
+              <PredictionCard gasData={formattedChartData.map(item => ({
+                time: item.time,
+                price: item.price,
+                predictedLow: 0,
+                networkActivity: item.networkLoad,
+                gasUsed: 0,
+                utilizationPercent: item.networkLoad,
+                totalTransactions: item.transactions,
+                totalValueTransferred: item.valueTransferred,
+                blockNumber: 0,
+                baseFee: item.price,
+                priorityFee: 0,
+                burntFees: 0,
+                rewards: 0,
+                eip1559Transactions: 0,
+                legacyTransactions: 0,
+                networkCongestion: 'low',
+                networkTrend: 'stable' as const,
+                predictedHigh: 0,
+                predictedMedian: 0,
+                confidence: 0,
+                avgGasPrice: 0,
+                medianGasPrice: 0,
+                avgPriorityFee: 0,
+                medianPriorityFee: 0
+              }))} />
+              <CustomAlerts />
+            </div>
           </div>
-
-          <div className="w-[400px] shrink-0 space-y-6">
-            <PredictionCard gasData={formattedChartData.map(item => ({
-              time: item.time,
-              price: item.price,
-              predictedLow: 0,
-              networkActivity: item.networkLoad,
-              gasUsed: 0,
-              utilizationPercent: item.networkLoad,
-              totalTransactions: item.transactions,
-              totalValueTransferred: item.valueTransferred,
-              blockNumber: 0,
-              baseFee: item.price,
-              priorityFee: 0,
-              burntFees: 0,
-              rewards: 0,
-              eip1559Transactions: 0,
-              legacyTransactions: 0,
-              networkCongestion: 'low',
-              networkTrend: 'stable' as const,
-              predictedHigh: 0,
-              predictedMedian: 0,
-              confidence: 0,
-              avgGasPrice: 0,
-              medianGasPrice: 0,
-              avgPriorityFee: 0,
-              medianPriorityFee: 0
-            }))} />
-            <CustomAlerts />
-          </div>
-        </div>
-      </main>
-    </div>
+        </main>
+      </div>
+    </>
   );
 }
 
