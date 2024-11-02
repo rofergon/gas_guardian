@@ -70,6 +70,19 @@ export const ChartDisplay = ({
     return colors[selectedChart as keyof typeof colors] || '#22c55e';
   };
 
+  const handleClick = (data: {
+    activePayload?: Array<{
+      payload: {
+        blockNumber: number;
+      };
+    }>;
+  }) => {
+    if (data && data.activePayload && data.activePayload[0]) {
+      const blockNumber = data.activePayload[0].payload.blockNumber;
+      window.open(`https://etherscan.io/block/${blockNumber}`, '_blank');
+    }
+  };
+
   return (
     <div className={`${
       isDark ? 'bg-slate-800/50' : 'bg-white/95'
@@ -116,6 +129,7 @@ export const ChartDisplay = ({
         <LineChart
           data={formattedChartData}
           margin={{ right: 30, left: 20, top: 10, bottom: 10 }}
+          onClick={handleClick}
         >
           <rect
             x={0}
@@ -167,13 +181,16 @@ export const ChartDisplay = ({
               if (active && payload && payload.length) {
                 const data = payload[0].payload;
                 return (
-                  <div className={`p-3 rounded-lg ${isDark ? 'bg-slate-800' : 'bg-white'} shadow-lg border border-slate-200/20`}>
+                  <div className={`p-3 rounded-lg ${isDark ? 'bg-slate-800' : 'bg-white'} shadow-lg border border-slate-200/20 cursor-pointer`}>
                     <p className="text-sm text-slate-400">{data.time}</p>
-                    <p className="text-sm font-medium">
+                    <p className="text-sm font-medium hover:text-blue-500">
                       Block: {data.blockNumber}
                     </p>
                     <p className="text-sm font-medium">
                       {selectedChart}: {payload[0].value}
+                    </p>
+                    <p className="text-xs text-slate-400 mt-1">
+                      Click para ver en Etherscan
                     </p>
                   </div>
                 );
