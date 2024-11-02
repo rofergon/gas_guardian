@@ -3,14 +3,6 @@ import { useTheme } from '../../hooks/useTheme';
 import { format } from 'date-fns';
 import { TimeRange } from '../../hooks/useBlockDataChart';
 
-interface ChartData {
-  time: string;
-  price?: number;
-  networkLoad?: number;
-  transactions?: number;
-  valueTransferred?: number;
-  [key: string]: string | number | undefined;
-}
 
 interface ChartDisplayProps {
   selectedChart: string;

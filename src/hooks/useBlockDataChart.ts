@@ -44,7 +44,7 @@ export const useBlockDataChart = (timeRange: TimeRange = '24h') => {
     return offsets[range];
   };
 
-  const processDataPoints = (data: BlockChartData[], maxPoints: number = 500) => {
+  const processDataPoints = (data: BlockChartData[], maxPoints: number = 700) => {
     if (data.length <= maxPoints) return data;
     
     const lastDataPoint = data[data.length - 1];
@@ -123,7 +123,7 @@ export const useBlockDataChart = (timeRange: TimeRange = '24h') => {
   useEffect(() => {
     console.log('useEffect triggered');
     fetchBlockData();
-    const interval = setInterval(fetchBlockData, 15000);
+    const interval = setInterval(fetchBlockData, 10000);
     return () => clearInterval(interval);
   }, [timeRange]);
 
