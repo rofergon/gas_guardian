@@ -36,50 +36,19 @@ export async function generateAIPredictions(
   try {
     const messages: OpenAI.Chat.ChatCompletionMessageParam[] = [];
     
-    if (chartImageBase64) {
-      messages.push({
-        role: "user",
-        content: [
-          {
-            type: "text",
-            text: "Analyze this Ethereum gas price chart for the last 24 hours and provide:\n\n" +
-                 "1. Market Condition:\n" +
-                 "- General gas trend\n" +
-                 "- Specific support and resistance levels in Gwei\n" +
-                 "- Percentage variation in the last 24 hours\n\n" +
-                 "2. Specific recommendations based on the chart:\n" +
-                 "- Identify the exact hours where gas was lowest in the last 24h\n" +
-                 "- Compare current price with day's highs and lows\n" +
-                 "- Recommend whether to execute transactions now or wait for a specific time\n" +
-                 "- Mention time ranges where gas has historically been cheaper\n\n" +
-                 "3. Graph Analysis:\n" +
-                 "- Volatility patterns at specific hours\n" +
-                 "- Network congestion trends at different times of day\n" +
-                 "- Price projection for the coming hours based on current pattern"
-          },
-          {
-            type: "image_url",
-            image_url: {
-              url: `data:image/png;base64,${chartImageBase64}`
-            }
-          }
-        ]
-      });
-    }
+    messages.push({
+      role: "system",
+      content: `Act as an expert Ethereum gas analyst. Use the following information as context:
+      - Current price: ${historicalData.currentData.price.toFixed(2)} Gwei
+      - Network Congestion: ${historicalData.currentData.networkCongestion}
+      - Network Trend: ${historicalData.currentData.networkTrend}
+      - Network Activity: ${historicalData.currentData.networkActivity}%
+      - Average Gas Price: ${historicalData.currentData.avgGasPrice} Gwei
+      - Median Priority Fee: ${historicalData.currentData.medianPriorityFee} Gwei
+      - Total Transactions: ${historicalData.currentData.totalTransactions}`
+    });
 
     if (customPrompt) {
-      messages.push({
-        role: "system",
-        content: `Act as an expert Ethereum gas analyst. Use the following information as context:
-        - Current price: ${historicalData.currentData.price.toFixed(2)} Gwei
-        - Network Congestion: ${historicalData.currentData.networkCongestion}
-        - Network Trend: ${historicalData.currentData.networkTrend}
-        - Network Activity: ${historicalData.currentData.networkActivity}%
-        - Average Gas Price: ${historicalData.currentData.avgGasPrice} Gwei
-        - Median Priority Fee: ${historicalData.currentData.medianPriorityFee} Gwei
-        - Total Transactions: ${historicalData.currentData.totalTransactions}`
-      });
-      
       messages.push({
         role: "user",
         content: customPrompt
@@ -125,7 +94,7 @@ Respond ONLY with a JSON object using this structure:
     }
 
     const completion = await openai.chat.completions.create({
-      model: "chatgpt-4o-latest",
+      model: "gpt-4",
       messages: messages,
       max_tokens: 1500,
       temperature: 0.7,
@@ -136,10 +105,11 @@ Respond ONLY with a JSON object using this structure:
     if (customPrompt) {
       return {
         predictedDrop: 0,
-        optimalTime: "Custom Query",
+        optimalTime: "",
         recommendations: [response],
         marketCondition: "",
-        graphAnalysis: ""
+        graphAnalysis: "",
+        confidence: 0
       };
     } else {
       try {

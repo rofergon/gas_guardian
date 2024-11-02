@@ -42,41 +42,24 @@ export const aiService = {
         }
       };
       
-      let enrichedPrompt = '';
+      let enrichedPrompt = customPrompt;
       if (customPrompt) {
-        const lastHourData = gasData.slice(-4); // last 4 entries (1 hour)
-        const avgUtilization = lastHourData.reduce((acc, curr) => acc + curr.utilizationPercent, 0) / lastHourData.length;
-        
-        enrichedPrompt = `Current Ethereum Network Context:
-        - Current Price: ${lastRecord.price} Gwei
-        - Average Utilization Last Hour: ${avgUtilization.toFixed(2)}%
-        - Network Trend: ${lastRecord.networkTrend}
-        - Congestion: ${lastRecord.networkCongestion}
-        - Priority Fee: ${lastRecord.avgPriorityFee} Gwei
-        
-        Previous Analysis:
-        - Market Condition: ${previousAnalysis?.marketCondition || 'N/A'}
-        - Previous Confidence: ${previousAnalysis?.confidence || 'N/A'}/10
-        
-        User Question: ${customPrompt}
-        
-        Please provide specific analysis considering:
-        1. Current network data
-        2. Last hour trend
-        3. Practical and specific recommendations
-        4. Optimal timing if relevant`;
+        enrichedPrompt = `Based on the current Ethereum network state, please answer the following question:
+
+${customPrompt}
+
+Consider the following metrics in your analysis:
+- Current Gas Price: ${lastRecord.price} Gwei
+- Network Congestion: ${lastRecord.networkCongestion}
+- Network Trend: ${lastRecord.networkTrend}
+- Average Priority Fee: ${lastRecord.avgPriorityFee} Gwei
+
+Please provide a detailed and specific answer focusing on the user's question.`;
       }
       
       const predictions = await generateAIPredictions(enhancedData, undefined, enrichedPrompt);
       
-      return {
-        predictedDrop: predictions.predictedDrop,
-        optimalTime: predictions.optimalTime,
-        recommendations: predictions.recommendations,
-        marketCondition: predictions.marketCondition,
-        graphAnalysis: predictions.graphAnalysis,
-        confidence: predictions.confidence || 0
-      };
+      return predictions;
     } catch (error) {
       console.error('Error generating predictions:', error);
       return {

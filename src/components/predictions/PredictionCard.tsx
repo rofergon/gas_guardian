@@ -2,7 +2,6 @@ import React, { useState, useCallback } from 'react';
 import { Brain, TrendingDown, Clock, Zap, RefreshCw, Send, X, Activity } from 'lucide-react';
 import { useTheme } from '../../hooks/useTheme';
 import { aiService } from '../../services/aiService';
-import { debounce } from 'lodash';
 import type { BlockChartData } from '../../hooks/useBlockDataChart';
 
 interface PredictionCardProps {
@@ -54,8 +53,6 @@ const PredictionCard: React.FC<PredictionCardProps> = React.memo(({ gasData }) =
       generatePredictions(customPrompt);
     }
   };
-
-  const debouncedSetCustomPrompt = useCallback(debounce(setCustomPrompt, 300), []);
 
   return (
     <div className={`${
@@ -112,7 +109,7 @@ const PredictionCard: React.FC<PredictionCardProps> = React.memo(({ gasData }) =
             <input
               type="text"
               value={customPrompt}
-              onChange={(e) => debouncedSetCustomPrompt(e.target.value)}
+              onChange={(e) => setCustomPrompt(e.target.value)}
               placeholder="Ask about gas prices..."
               className={`
                 flex-1 px-3 py-1.5 rounded-lg text-sm
