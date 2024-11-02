@@ -68,7 +68,10 @@ const StatCard: React.FC<StatCardProps> = ({
             <span className={`text-xs ${isDark ? 'text-slate-400' : 'text-slate-500'}`}>
               {subtitle}
             </span>
-            <div className="w-1.5 h-1.5 rounded-full bg-red-500 animate-pulse-fast" />
+            <div className="relative">
+              <div className="w-2 h-2 bg-red-500 rounded-full animate-pulse"></div>
+              <div className="absolute -inset-0.5 bg-red-500 rounded-full animate-ping opacity-75"></div>
+            </div>
             {trend && (
               <span className={`
                 flex items-center text-xs font-medium

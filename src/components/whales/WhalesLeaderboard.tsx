@@ -44,11 +44,23 @@ const WhalesLeaderboard = () => {
 
   return (
     <div className={`${isDark ? 'bg-slate-800' : 'bg-white'} rounded-xl p-6 shadow-lg`}>
-      <div className="flex items-center gap-2 mb-6">
-        <TrendingUp className={`w-6 h-6 ${isDark ? 'text-blue-400' : 'text-blue-500'}`} />
-        <h2 className={`text-xl font-semibold ${isDark ? 'text-white' : 'text-slate-900'}`}>
-          Whales Leaderboard
-        </h2>
+      <div className="flex items-center justify-between mb-6">
+        <div className="flex items-center gap-2">
+          <TrendingUp className={`w-6 h-6 ${isDark ? 'text-blue-400' : 'text-blue-500'}`} />
+          <h2 className={`text-xl font-semibold ${isDark ? 'text-white' : 'text-slate-900'}`}>
+            Whales Leaderboard
+          </h2>
+        </div>
+        
+        <div className="flex items-center gap-2">
+          <span className={`text-sm ${isDark ? 'text-slate-400' : 'text-slate-600'}`}>
+            Real Time Data Streaming
+          </span>
+          <div className="relative">
+            <div className="w-2 h-2 bg-red-500 rounded-full animate-pulse"></div>
+            <div className="absolute -inset-0.5 bg-red-500 rounded-full animate-ping opacity-75"></div>
+          </div>
+        </div>
       </div>
 
       <div className="overflow-x-auto">
