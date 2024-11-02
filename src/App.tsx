@@ -92,7 +92,7 @@ function App() {
       }`}>
         <Header />
 
-        <main className="flex-1 mx-[50px] lg:mx-[100px] xl:mx-[150px] pt-20 pb-6">
+        <main className="flex-1 mx-[20px] lg:mx-[50px] xl:mx-[80px] pt-20 pb-6">
           <div className="flex flex-col gap-6">
             <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-4 w-full">
               <StatCard
