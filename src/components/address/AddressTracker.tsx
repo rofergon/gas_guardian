@@ -5,13 +5,36 @@ import { useTheme } from '../../hooks/useTheme';
 interface TrackedAddress {
   address: string;
   nickname: string;
+  value: string;
 }
 
 export default function AddressTracker() {
   const { isDark } = useTheme();
   const [addresses, setAddresses] = useState<TrackedAddress[]>(() => {
     const saved = localStorage.getItem('trackedAddresses');
-    return saved ? JSON.parse(saved) : [];
+    const parsedSaved = saved ? JSON.parse(saved) : null;
+    
+    // Solo usar los datos guardados si existen Y tienen al menos un elemento
+    if (parsedSaved && parsedSaved.length > 0) return parsedSaved;
+    
+    // Si no hay datos guardados, usar los datos de ejemplo
+    return [
+      {
+        address: "0xd8dA6BF26964aF9D7eEd9e03E53415D37aA96045",
+        nickname: "Vitalik",
+        value: "1,234.56"
+      },
+      {
+        address: "0x690B9A9E9aa1C9dB991C7721a92d351Db4FaC990",
+        nickname: "Wallet Demo",
+        value: "42.69"
+      },
+      {
+        address: "0x829BD824B016326A401d083B33D092293333A830",
+        nickname: "Test Wallet",
+        value: "0.0125"
+      }
+    ];
   });
   const [newAddress, setNewAddress] = useState('');
   const [newNickname, setNewNickname] = useState('');
@@ -27,7 +50,8 @@ export default function AddressTracker() {
     
     setAddresses(prev => [...prev, {
       address: newAddress,
-      nickname: newNickname || newAddress.substring(0, 6) + '...' + newAddress.substring(38)
+      nickname: newNickname || newAddress.substring(0, 6) + '...' + newAddress.substring(38),
+      value: '---'
     }]);
     setNewAddress('');
     setNewNickname('');
@@ -124,33 +148,39 @@ export default function AddressTracker() {
                   : 'bg-slate-50 hover:bg-slate-100'
               } transition-colors`}
             >
-              <div className="flex-1 flex items-center">
-                {editingAddress === item.address ? (
-                  <input
-                    type="text"
-                    value={editingNickname}
-                    onChange={(e) => setEditingNickname(e.target.value)}
-                    className={`px-2 py-1 rounded text-sm ${
-                      isDark 
-                        ? 'bg-slate-600 text-white' 
-                        : 'bg-white text-slate-900'
-                    }`}
-                    autoFocus
-                  />
-                ) : (
-                  <div
-                    onClick={() => openEtherscan(item.address)}
-                    className="cursor-pointer hover:text-blue-500 flex items-center"
-                  >
-                    <span className="font-medium">{item.nickname}</span>
-                    <span className={`text-sm ml-2 ${
-                      isDark ? 'text-slate-400' : 'text-slate-500'
-                    }`}>
-                      ({item.address.substring(0, 6)}...{item.address.substring(38)})
-                    </span>
-                    <ExternalLink size={14} className="ml-2 opacity-50" />
-                  </div>
-                )}
+              <div className="flex-1 flex items-center gap-4">
+                <div className="flex-1">
+                  {editingAddress === item.address ? (
+                    <input
+                      type="text"
+                      value={editingNickname}
+                      onChange={(e) => setEditingNickname(e.target.value)}
+                      className={`px-2 py-1 rounded text-sm ${
+                        isDark 
+                          ? 'bg-slate-600 text-white' 
+                          : 'bg-white text-slate-900'
+                      }`}
+                      autoFocus
+                    />
+                  ) : (
+                    <div
+                      onClick={() => openEtherscan(item.address)}
+                      className="cursor-pointer hover:text-blue-500 flex items-center"
+                    >
+                      <span className="font-medium">{item.nickname}</span>
+                      <span className={`text-sm ml-2 ${
+                        isDark ? 'text-slate-400' : 'text-slate-500'
+                      }`}>
+                        ({item.address.substring(0, 6)}...{item.address.substring(38)})
+                      </span>
+                      <ExternalLink size={14} className="ml-2 opacity-50" />
+                    </div>
+                  )}
+                </div>
+                
+                <div className={`text-sm ${isDark ? 'text-slate-400' : 'text-slate-500'}`}>
+                  {item.value} ETH
+                </div>
               </div>
               
               <div className="flex items-center gap-2">
