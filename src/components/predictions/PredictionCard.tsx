@@ -237,6 +237,8 @@ const PredictionCard: React.FC<PredictionCardProps> = React.memo(({ gasData }) =
       ) : (
         <div className="text-center text-slate-400 py-8">
           Click "Generate Prediction" to get insights based on real-time data
+          <br />
+          or ask a custom question about the current state
         </div>
       ))}
     </div>
