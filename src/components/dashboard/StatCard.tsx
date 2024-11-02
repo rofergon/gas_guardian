@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { LucideIcon } from 'lucide-react';
 import { useTheme } from '../../hooks/useTheme';
 import { motion } from 'framer-motion';
@@ -32,15 +32,20 @@ const StatCard: React.FC<StatCardProps> = ({
   icon: Icon,
   iconColor,
   onClick,
-  isSelected,
+  isSelected = false,
   trend}) => {
   const { isDark } = useTheme();
   
+  useEffect(() => {
+    console.log(`StatCard ${title} rendered:`, {
+      isSelected,
+      hasOnClick: !!onClick
+    });
+  }, [title, isSelected, onClick]);
+
   return (
     <motion.div
       onClick={onClick}
-      whileHover={{ scale: 1.02 }}
-      whileTap={{ scale: 0.98 }}
       className={`
         relative p-4 md:p-6 rounded-xl
         ${isSelected ? 'ring-2 ring-blue-500' : ''}
