@@ -94,7 +94,7 @@ function App() {
 
         <main className="flex-1 mx-[20px] lg:mx-[50px] xl:mx-[80px] pt-20 pb-6">
           <div className="flex flex-col gap-6">
-            <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-4 w-full">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 w-full">
               <StatCard
                 title="Gas Price"
                 value={`${latestData.price.toFixed(2)} Gwei`}
@@ -137,8 +137,8 @@ function App() {
               />
             </div>
 
-            <div className="flex flex-row gap-6">
-              <div className="flex-1 space-y-6">
+            <div className="flex flex-col lg:flex-row gap-6">
+              <div className="w-full lg:flex-1 space-y-6">
                 <ChartDisplay 
                   selectedChart={selectedChart || 'price'} 
                   formattedChartData={formattedChartData}
@@ -149,7 +149,7 @@ function App() {
                 <WhalesLeaderboard />
               </div>
 
-              <div className="w-[450px] shrink-0 space-y-6">
+              <div className="w-full lg:w-[450px] lg:shrink-0 space-y-6">
                 <PredictionCard gasData={formattedChartData.map(item => ({
                   time: item.time,
                   price: item.price,
