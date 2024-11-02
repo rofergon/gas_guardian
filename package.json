@@ -32,6 +32,7 @@
     "date-fns": "^4.1.0",
     "ethers": "^6.13.4",
     "framer-motion": "^11.11.10",
+    "html2canvas": "^1.4.1",
     "lucide-react": "^0.344.0",
     "openai": "^4.68.4",
     "react": "^18.3.1",

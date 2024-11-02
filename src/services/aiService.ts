@@ -14,7 +14,8 @@ export const aiService = {
   async generatePredictions(
     gasData: BlockChartData[], 
     customPrompt?: string,
-    previousAnalysis?: AIPrediction
+    _previousAnalysis?: AIPrediction,
+    chartImage?: string
   ): Promise<AIPrediction> {
     try {
       const lastRecord = gasData[gasData.length - 1];
@@ -44,7 +45,7 @@ export const aiService = {
       
       let enrichedPrompt = customPrompt;
       if (customPrompt) {
-        enrichedPrompt = `Based on the current Ethereum network state, please answer the following question:
+        enrichedPrompt = `Based on the current Ethereum network state and the provided chart visualization, please answer the following question:
 
 ${customPrompt}
 
@@ -54,10 +55,15 @@ Consider the following metrics in your analysis:
 - Network Trend: ${lastRecord.networkTrend}
 - Average Priority Fee: ${lastRecord.avgPriorityFee} Gwei
 
+The chart visualization has been provided for additional context.
 Please provide a detailed and specific answer focusing on the user's question.`;
       }
       
-      const predictions = await generateAIPredictions(enhancedData, undefined, enrichedPrompt);
+      const predictions = await generateAIPredictions(
+        enhancedData, 
+        chartImage,
+        enrichedPrompt
+      );
       
       return predictions;
     } catch (error) {

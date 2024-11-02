@@ -21,6 +21,8 @@ const PredictionCard: React.FC<PredictionCardProps> = React.memo(({ gasData }) =
   const [error, setError] = useState<string | null>(null);
   const [customPrompt, setCustomPrompt] = useState('');
   const [showCustomInput, setShowCustomInput] = useState(false);
+  const [chartImage] = useState<string>('');
+
 
   const generatePredictions = useCallback(async (customRequest?: string) => {
     if (gasData.length === 0) {
@@ -32,7 +34,7 @@ const PredictionCard: React.FC<PredictionCardProps> = React.memo(({ gasData }) =
       setLoading(true);
       setError(null);
       
-      const newPredictions = await aiService.generatePredictions(gasData, customRequest);
+      const newPredictions = await aiService.generatePredictions(gasData, customRequest, undefined, chartImage);
       
       setPredictions(newPredictions);
       if (customRequest) {
@@ -45,7 +47,7 @@ const PredictionCard: React.FC<PredictionCardProps> = React.memo(({ gasData }) =
     } finally {
       setLoading(false);
     }
-  }, [gasData]);
+  }, [gasData, chartImage]);
 
   const handleCustomRequest = (e: React.FormEvent) => {
     e.preventDefault();
@@ -234,7 +236,7 @@ const PredictionCard: React.FC<PredictionCardProps> = React.memo(({ gasData }) =
         </div>
       ) : (
         <div className="text-center text-slate-400 py-8">
-          Click "Generate Prediction" to get insights
+          Click "Generate Prediction" to get insights based on real-time data
         </div>
       ))}
     </div>

@@ -7,8 +7,8 @@ const WhalesLeaderboard = () => {
   const { isDark } = useTheme();
   const [currentPage, setCurrentPage] = useState(1);
   const pageSize = 10;
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  const { whales, loading, error, totalCount } = useWhalesData(currentPage, pageSize);
+   
+  const { whales, loading, totalCount } = useWhalesData(currentPage, pageSize);
   const [copiedAddress, setCopiedAddress] = useState<string | null>(null);
   const totalPages = Math.ceil(totalCount / pageSize);
 

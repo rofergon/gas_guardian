@@ -56,6 +56,7 @@ export const useGasAlerts = (alerts: Alert[], chartData: BlockChartData[]) => {
         }
       }
     });
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [alerts, chartData]);
 
   return {

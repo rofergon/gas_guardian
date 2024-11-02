@@ -2,7 +2,8 @@ import { LineChart, Line, XAxis, YAxis, Tooltip, ResponsiveContainer, CartesianG
 import { useTheme } from '../../hooks/useTheme';
 import { format } from 'date-fns';
 import { TimeRange } from '../../hooks/useBlockDataChart';
-
+import html2canvas from 'html2canvas';
+import { useRef, useCallback, useEffect, useState } from 'react';
 
 interface ChartDisplayProps {
   selectedChart: string;
@@ -17,6 +18,15 @@ interface ChartDisplayProps {
   timeRange: TimeRange;
   onTimeRangeChange: (range: TimeRange) => void;
   currentBlockNumber?: number;
+  onChartImageUpdate?: (imageBase64: string) => void;
+  onChartImagesUpdate?: (images: ChartImages) => void;
+}
+
+interface ChartImages {
+  price?: string;
+  networkLoad?: string;
+  transactions?: string;
+  valueTransferred?: string;
 }
 
 export const ChartDisplay = ({ 
@@ -24,9 +34,12 @@ export const ChartDisplay = ({
   formattedChartData, 
   timeRange, 
   onTimeRangeChange,
-  currentBlockNumber = 0
+  currentBlockNumber = 0,
+  onChartImagesUpdate
 }: ChartDisplayProps) => {
   const { isDark } = useTheme();
+  const chartRef = useRef<HTMLDivElement>(null);
+  const [chartImages, setChartImages] = useState<ChartImages>({});
 
   const timeRanges = [
     { value: '2h', label: '2H' },
@@ -83,8 +96,34 @@ export const ChartDisplay = ({
     }
   };
 
+  const captureChart = useCallback(async () => {
+    if (!chartRef.current || !onChartImagesUpdate) return;
+    
+    try {
+      const canvas = await html2canvas(chartRef.current, {
+        backgroundColor: null,
+        scale: 2,
+      });
+      
+      const imageBase64 = canvas.toDataURL('image/png');
+      const newImages = {
+        ...chartImages,
+        [selectedChart]: imageBase64
+      };
+      
+      setChartImages(newImages);
+      onChartImagesUpdate(newImages);
+    } catch (error) {
+      console.error('Error capturing chart:', error);
+    }
+  }, [onChartImagesUpdate, selectedChart, chartImages]);
+
+  useEffect(() => {
+    captureChart();
+  }, [selectedChart, formattedChartData, captureChart]);
+
   return (
-    <div className={`${
+    <div ref={chartRef} className={`${
       isDark ? 'bg-slate-800/50' : 'bg-white/95'
     } backdrop-blur-sm p-4 rounded-xl border ${isDark ? 'border-slate-700/50' : 'border-slate-200'}`}>
       <div className="flex justify-between items-center mb-4">

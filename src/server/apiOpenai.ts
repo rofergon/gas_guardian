@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 import OpenAI from 'openai';
 
 const openai = new OpenAI({
@@ -29,10 +30,7 @@ interface EnhancedHistoricalData {
 }
 
 export async function generateAIPredictions(
-  historicalData: EnhancedHistoricalData,
-  chartImageBase64?: string,
-  customPrompt?: string
-) {
+historicalData: EnhancedHistoricalData, customPrompt?: string, _enrichedPrompt?: string | undefined) {
   try {
     const messages: OpenAI.Chat.ChatCompletionMessageParam[] = [];
     
