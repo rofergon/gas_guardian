@@ -16,7 +16,7 @@ const ALERTS_STORAGE_KEY = 'gas-alerts';
 const CustomAlerts = () => {
   const { isDark } = useTheme();
   const [alerts, setAlerts] = useState<Alert[]>(() => {
-    // Inicializar el estado con los datos del localStorage
+    // Initialize state with data from localStorage
     const savedAlerts = localStorage.getItem(ALERTS_STORAGE_KEY);
     return savedAlerts ? JSON.parse(savedAlerts) : [
       { id: '1', name: 'Low Gas Alert', threshold: 10, isActive: true },
@@ -29,13 +29,13 @@ const CustomAlerts = () => {
     threshold: 0
   });
 
-  // Obtener los datos del chart que ya incluyen el base fee
+  // Get chart data that already includes the base fee
   const { chartData } = useBlockDataChart('2h');
   
-  // Usar el hook de alertas con los datos del chart
+  // Use the alerts hook with chart data
   useGasAlerts(alerts, chartData);
 
-  // Efecto para guardar las alertas en localStorage cuando cambien
+  // Effect to save alerts in localStorage when they change
   useEffect(() => {
     localStorage.setItem(ALERTS_STORAGE_KEY, JSON.stringify(alerts));
   }, [alerts]);

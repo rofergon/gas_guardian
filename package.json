@@ -18,6 +18,8 @@
     "@emotion/styled": "^11.13.0",
     "@heroicons/react": "^2.1.5",
     "@libsql/client": "^0.14.0",
+    "@mui/icons-material": "^6.1.6",
+    "@mui/material": "^6.1.6",
     "@netlify/functions": "^2.8.2",
     "@reown/appkit": "^1.2.0",
     "@reown/appkit-adapter-wagmi": "^1.2.0",

@@ -43,26 +43,10 @@ export const aiService = {
         }
       };
       
-      let enrichedPrompt = customPrompt;
-      if (customPrompt) {
-        enrichedPrompt = `Based on the current Ethereum network state and the provided chart visualization, please answer the following question:
-
-${customPrompt}
-
-Consider the following metrics in your analysis:
-- Current Gas Price: ${lastRecord.price} Gwei
-- Network Congestion: ${lastRecord.networkCongestion}
-- Network Trend: ${lastRecord.networkTrend}
-- Average Priority Fee: ${lastRecord.avgPriorityFee} Gwei
-
-The chart visualization has been provided for additional context.
-Please provide a detailed and specific answer focusing on the user's question.`;
-      }
-      
       const predictions = await generateAIPredictions(
         enhancedData, 
-        chartImage,
-        enrichedPrompt
+        customPrompt,
+        undefined
       );
       
       return predictions;

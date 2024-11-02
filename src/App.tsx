@@ -5,11 +5,12 @@ import { TimeRange, useBlockDataChart } from './hooks/useBlockDataChart';
 import { useTheme } from './hooks/useTheme';
 import { useState } from 'react';
 import { ChartDisplay } from './components/dashboard/ChartDisplay';
-import PredictionCard from './components/predictions/PredictionCard';
+import PredictionCard from './components/predictions/PredictionCardAI';
 import WhalesLeaderboard from './components/whales/WhalesLeaderboard';
 import { useWhalesData } from './hooks/useWhalesData';
 import CustomAlerts from './components/alerts/CustomAlerts';
 import { Toaster } from 'react-hot-toast';
+import CustomPromptChat from './components/predictions/CustomPromptChat';
 
 interface ChartDataItem {
   time: string;
@@ -149,6 +150,32 @@ function App() {
 
             <div className="w-full lg:w-[400px] shrink-0 space-y-6">
               <PredictionCard gasData={formattedChartData.map(item => ({
+                time: item.time,
+                price: item.price,
+                predictedLow: 0,
+                networkActivity: item.networkLoad,
+                gasUsed: 0,
+                utilizationPercent: item.networkLoad,
+                totalTransactions: item.transactions,
+                totalValueTransferred: item.valueTransferred,
+                blockNumber: 0,
+                baseFee: item.price,
+                priorityFee: 0,
+                burntFees: 0,
+                rewards: 0,
+                eip1559Transactions: 0,
+                legacyTransactions: 0,
+                networkCongestion: 'low',
+                networkTrend: 'stable' as const,
+                predictedHigh: 0,
+                predictedMedian: 0,
+                confidence: 0,
+                avgGasPrice: 0,
+                medianGasPrice: 0,
+                avgPriorityFee: 0,
+                medianPriorityFee: 0
+              }))} />
+              <CustomPromptChat gasData={formattedChartData.map(item => ({
                 time: item.time,
                 price: item.price,
                 predictedLow: 0,
