@@ -90,6 +90,7 @@ const CustomAlerts = () => {
               </button>
               <button
                 onClick={() => handleDeleteAlert(alert.id)}
+                aria-label={`Delete ${alert.name}`}
                 className={`${
                   isDark ? 'text-slate-400 hover:text-red-400' : 'text-slate-400 hover:text-red-500'
                 } transition-colors`}
