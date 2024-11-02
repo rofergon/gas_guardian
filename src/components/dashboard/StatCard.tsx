@@ -42,7 +42,7 @@ const StatCard: React.FC<StatCardProps> = ({
       whileHover={{ scale: 1.02 }}
       whileTap={{ scale: 0.98 }}
       className={`
-        relative p-6 rounded-xl
+        relative p-4 md:p-6 rounded-xl
         ${isSelected ? 'ring-2 ring-blue-500' : ''}
         cursor-pointer
         ${isDark 
