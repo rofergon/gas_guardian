@@ -1,5 +1,5 @@
 import { Bell, Trash2 } from 'lucide-react';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useTheme } from '../../hooks/useTheme';
 import { useGasAlerts } from '../../hooks/useGasAlerts';
 import { useBlockDataChart } from '../../hooks/useBlockDataChart';
@@ -11,12 +11,18 @@ interface Alert {
   isActive: boolean;
 }
 
+const ALERTS_STORAGE_KEY = 'gas-alerts';
+
 const CustomAlerts = () => {
   const { isDark } = useTheme();
-  const [alerts, setAlerts] = useState<Alert[]>([
-    { id: '1', name: 'Low Gas Alert', threshold: 10, isActive: true },
-    { id: '2', name: 'Medium Gas Alert', threshold: 20, isActive: false },
-  ]);
+  const [alerts, setAlerts] = useState<Alert[]>(() => {
+    // Inicializar el estado con los datos del localStorage
+    const savedAlerts = localStorage.getItem(ALERTS_STORAGE_KEY);
+    return savedAlerts ? JSON.parse(savedAlerts) : [
+      { id: '1', name: 'Low Gas Alert', threshold: 10, isActive: true },
+      { id: '2', name: 'Medium Gas Alert', threshold: 20, isActive: false },
+    ];
+  });
   const [isAddingAlert, setIsAddingAlert] = useState(false);
   const [newAlert, setNewAlert] = useState({
     name: '',
@@ -28,6 +34,11 @@ const CustomAlerts = () => {
   
   // Usar el hook de alertas con los datos del chart
   useGasAlerts(alerts, chartData);
+
+  // Efecto para guardar las alertas en localStorage cuando cambien
+  useEffect(() => {
+    localStorage.setItem(ALERTS_STORAGE_KEY, JSON.stringify(alerts));
+  }, [alerts]);
 
   const handleDeleteAlert = (id: string) => {
     setAlerts(alerts.filter(alert => alert.id !== id));
