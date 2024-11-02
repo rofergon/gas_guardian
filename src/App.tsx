@@ -139,7 +139,6 @@ function App() {
           </div>
 
           <div className="w-[400px] shrink-0 space-y-6">
-            <CustomAlerts />
             <PredictionCard gasData={formattedChartData.map(item => ({
               time: item.time,
               price: item.price,
@@ -166,6 +165,7 @@ function App() {
               avgPriorityFee: 0,
               medianPriorityFee: 0
             }))} />
+            <CustomAlerts />
           </div>
         </div>
       </main>

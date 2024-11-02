@@ -15,6 +15,11 @@ const CustomAlerts = () => {
     { id: '1', name: 'Low Gas Alert', threshold: 10, isActive: true },
     { id: '2', name: 'Medium Gas Alert', threshold: 20, isActive: false },
   ]);
+  const [isAddingAlert, setIsAddingAlert] = useState(false);
+  const [newAlert, setNewAlert] = useState({
+    name: '',
+    threshold: 0
+  });
 
   const handleDeleteAlert = (id: string) => {
     setAlerts(alerts.filter(alert => alert.id !== id));
@@ -24,6 +29,21 @@ const CustomAlerts = () => {
     setAlerts(alerts.map(alert => 
       alert.id === id ? { ...alert, isActive: !alert.isActive } : alert
     ));
+  };
+
+  const handleAddAlert = () => {
+    if (newAlert.name && newAlert.threshold > 0) {
+      const alert: Alert = {
+        id: Date.now().toString(),
+        name: newAlert.name,
+        threshold: newAlert.threshold,
+        isActive: true
+      };
+      
+      setAlerts([...alerts, alert]);
+      setNewAlert({ name: '', threshold: 0 });
+      setIsAddingAlert(false);
+    }
   };
 
   return (
@@ -57,6 +77,7 @@ const CustomAlerts = () => {
             <div className="flex items-center gap-2">
               <button
                 onClick={() => handleToggleAlert(alert.id)}
+                aria-label={`${alert.isActive ? 'Disable' : 'Enable'} ${alert.name}`}
                 className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors ${
                   alert.isActive ? 'bg-blue-500' : isDark ? 'bg-slate-600' : 'bg-slate-300'
                 }`}
@@ -80,11 +101,49 @@ const CustomAlerts = () => {
         ))}
       </div>
 
-      <button
-        className="mt-4 w-full py-2 border border-dashed border-slate-300 dark:border-slate-600 rounded-lg text-slate-500 dark:text-slate-400 hover:text-blue-500 hover:border-blue-500 transition-colors"
-      >
-        + Add New Alert
-      </button>
+      {isAddingAlert ? (
+        <div className="mt-4 space-y-3">
+          <input
+            type="text"
+            placeholder="Alert Name"
+            value={newAlert.name}
+            onChange={(e) => setNewAlert({ ...newAlert, name: e.target.value })}
+            className={`w-full p-2 rounded-lg ${
+              isDark ? 'bg-slate-700 text-white placeholder-slate-400' : 'bg-slate-100 text-slate-900 placeholder-slate-500'
+            }`}
+          />
+          <input
+            type="number"
+            placeholder="Threshold (Gwei)"
+            value={newAlert.threshold}
+            onChange={(e) => setNewAlert({ ...newAlert, threshold: Number(e.target.value) })}
+            className={`w-full p-2 rounded-lg ${
+              isDark ? 'bg-slate-700 text-white placeholder-slate-400' : 'bg-slate-100 text-slate-900 placeholder-slate-500'
+            }`}
+          />
+          <div className="flex gap-2">
+            <button
+              onClick={handleAddAlert}
+              className="flex-1 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600"
+            >
+              Save
+            </button>
+            <button
+              onClick={() => setIsAddingAlert(false)}
+              className="flex-1 py-2 border border-slate-300 dark:border-slate-600 rounded-lg"
+            >
+              Cancel
+            </button>
+          </div>
+        </div>
+      ) : (
+        <button
+          onClick={() => setIsAddingAlert(true)}
+          className="mt-4 w-full py-2 border border-dashed border-slate-300 dark:border-slate-600 rounded-lg text-slate-500 dark:text-slate-400 hover:text-blue-500 hover:border-blue-500 transition-colors"
+        >
+          + Add New Alert
+        </button>
+      )}
     </div>
   );
 };
