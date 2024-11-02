@@ -92,7 +92,7 @@ Respond ONLY with a JSON object using this structure:
     }
 
     const completion = await openai.chat.completions.create({
-      model: "gpt-4",
+      model: "gpt-4o",
       messages: messages,
       max_tokens: 1500,
       temperature: 0.7,
