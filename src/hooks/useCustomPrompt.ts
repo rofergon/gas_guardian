@@ -1,17 +1,8 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 import { useState, useCallback } from 'react';
 import { aiService } from '../services/aiService';
 import type { BlockChartData } from './useBlockDataChart';
 
-interface UseCustomPromptReturn {
-  customPrompt: string;
-  setCustomPrompt: (value: string) => void;
-  showCustomInput: boolean;
-  setShowCustomInput: (value: boolean) => void;
-  loading: boolean;
-  error: string | null;
-  handleCustomRequest: (e: React.FormEvent) => void;
-  customResponse: string;
-}
 
 export function useCustomPrompt(gasData: BlockChartData[]) {
   const [customPrompt, setCustomPrompt] = useState('');

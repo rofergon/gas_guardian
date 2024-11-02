@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 import { generateAIPredictions } from '../server/apiOpenai';
 import type { BlockChartData } from '../hooks/useBlockDataChart';
 

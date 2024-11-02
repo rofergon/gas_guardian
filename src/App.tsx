@@ -11,6 +11,7 @@ import { useWhalesData } from './hooks/useWhalesData';
 import CustomAlerts from './components/alerts/CustomAlerts';
 import { Toaster } from 'react-hot-toast';
 import CustomPromptChat from './components/predictions/CustomPromptChat';
+import AddressTracker from './components/address/AddressTracker';
 
 interface ChartDataItem {
   time: string;
@@ -202,6 +203,7 @@ function App() {
                 medianPriorityFee: 0
               }))} />
               <CustomAlerts />
+              <AddressTracker />
             </div>
           </div>
         </main>
