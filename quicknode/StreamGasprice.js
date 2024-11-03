@@ -1,24 +1,24 @@
 function main(stream) {
     try {
-        // Handle cases where data might be nested under "data" key
+        // Normalize input data structure
         const data = stream.data || stream;
 
-        // Ensure data is an array and has at least one element
+        // Basic validation to ensure we have block data
         if (!Array.isArray(data) || data.length === 0) return null;
 
-        // Extract the block
         const block = data[0]?.block;
         if (!block) return null;
 
-        // Parse block metrics, handling undefined or missing values
+        // Convert hex values to decimal and normalize units
+        // Base fee is converted to Gwei (1 Gwei = 1e-9 ETH)
         const blockNumber = parseInt(block.number || '0x0', 16);
         const timestamp = parseInt(block.timestamp || '0x0', 16);
-        const baseFeePerGas = parseInt(block.baseFeePerGas || '0x0', 16) / 1e9; // Convert to Gwei
+        const baseFeePerGas = parseInt(block.baseFeePerGas || '0x0', 16) / 1e9;
         const gasLimit = parseInt(block.gasLimit || '0x0', 16);
         const gasUsed = parseInt(block.gasUsed || '0x0', 16);
         const blobGasUsed = parseInt(block.blobGasUsed || '0x0', 16);
 
-        // Avoid division by zero
+        // Calculate block utilization percentage
         const utilization = gasLimit > 0 ? (gasUsed / gasLimit) * 100 : 0;
 
         const blockMetrics = {
@@ -31,12 +31,13 @@ function main(stream) {
             utilization
         };
 
-        // Analyze transactions if they exist
+        // Process each transaction and collect statistics
         const transactions = block.transactions || [];
         const txStats = transactions.reduce((acc, tx) => {
+            // Convert gas prices to Gwei and ETH values
             const gasPrice = parseInt(tx.gasPrice || tx.maxFeePerGas || '0x0', 16) / 1e9;
             const priorityFee = tx.maxPriorityFeePerGas ? parseInt(tx.maxPriorityFeePerGas, 16) / 1e9 : 0;
-            const txType = tx.type ? parseInt(tx.type, 16) : 0;
+            const txType = tx.type ? parseInt(tx.type, 16) : 0; // 0=legacy, 2=EIP1559, 3=EIP4844
             const valueTransferred = parseInt(tx.value || '0x0', 16) / 1e18; // Convert to ETH
             const gasUsedTx = parseInt(tx.gas || '0x0', 16);
 
@@ -49,6 +50,7 @@ function main(stream) {
 
             return acc;
         }, {
+            // Initialize statistics accumulator
             totalTx: 0,
             gasPrices: [],
             priorityFees: [],
@@ -92,15 +94,20 @@ function main(stream) {
             ? txStats.gasUsedPerTx.reduce((a, b) => a + b, 0) / txStats.gasUsedPerTx.length
             : 0;
 
-        // Define MAX_BLOB_GAS_PER_BLOCK according to EIP-4844
-        const MAX_BLOB_GAS_PER_BLOCK = 524288; // Example value, adjust as needed
+        // EIP-4844 blob gas limit per block
+        const MAX_BLOB_GAS_PER_BLOCK = 524288;
 
-        // Calculate blob gas utilization
+        // Calculate blob space utilization percentage
         const blobUtilization = blobGasUsed > 0
             ? (blobGasUsed / MAX_BLOB_GAS_PER_BLOCK) * 100
             : 0;
 
-        // Build result object
+        // Return comprehensive block analysis including:
+        // - Basic block info
+        // - Gas metrics and utilization
+        // - Transaction statistics and type distribution
+        // - Network status indicators
+        // - Blob transaction metrics
         return {
             blockInfo: {
                 number: blockNumber,

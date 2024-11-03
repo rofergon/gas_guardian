@@ -14,10 +14,10 @@ export default function AddressTracker() {
     const saved = localStorage.getItem('trackedAddresses');
     const parsedSaved = saved ? JSON.parse(saved) : null;
     
-    // Solo usar los datos guardados si existen Y tienen al menos un elemento
+    // Only use saved data if it exists AND has at least one element
     if (parsedSaved && parsedSaved.length > 0) return parsedSaved;
     
-    // Si no hay datos guardados, usar los datos de ejemplo
+    // If there's no saved data, use example data
     return [
       {
         address: "0xd8dA6BF26964aF9D7eEd9e03E53415D37aA96045",

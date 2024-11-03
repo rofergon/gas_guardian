@@ -1,20 +1,20 @@
 async function main(params) {
     const axios = require('axios');
 
-    // Turso credentials from your .env
-    const TURSO_URL = 'https://gasguardian-rofergon.turso.io';
-    const TURSO_AUTH_TOKEN = 'eyJhbGciOiJFZERTQSIsInR5cCI6IkpXVCJ9.eyJhIjoicnciLCJpYXQiOjE3MzAxODIwODcsImlkIjoiZDY3ZTZlMTMtYTBjMC00NWQwLWE4YWItYzJmYTE5ODFmZTNkIn0.scna7FRx62_bR5kaK3x2_cDZaoqVuaXkKFWC2a36nYgmg7XIO8uNnSkKBphTcGsdAmwxyZw27RPBS4k4UJyIDg';
+    // Database connection credentials
+    const TURSO_URL = 'url here';
+    const TURSO_AUTH_TOKEN = 'token here';
 
     try {
-        // Log the raw input first
+        // Debug logging for troubleshooting
         console.log('Raw input params:', params);
         
-        // Check if params exists
+        // Initial params validation
         if (!params) {
             throw new Error('No params received');
         }
 
-        // Check if we need to parse the params
+        // Handle both string and object params formats
         let data = params.data;
         if (typeof params === 'string') {
             try {
@@ -27,7 +27,7 @@ async function main(params) {
             }
         }
 
-        // Detailed validation
+        // Enhanced debug logging for data structure
         console.log('Data object:', {
             dataExists: !!data,
             dataType: typeof data,
@@ -35,6 +35,7 @@ async function main(params) {
             rawData: data
         });
 
+        // Validate required data fields
         if (!data) {
             throw new Error('No data object in params');
         }
@@ -47,13 +48,13 @@ async function main(params) {
             throw new Error('No valid transactions array in data');
         }
 
-        // Filter only transactions with value > 0
+        // Only process transactions with required fields (hash, from, to)
         const validTransactions = data.transactions_clean
             .filter(tx => tx.hash && tx.from && tx.to);
 
         console.log('Valid transactions:', JSON.stringify(validTransactions, null, 2));
 
-        // Prepare SQL statements
+        // Create SQL insert statements for each valid transaction
         const sqlStatements = validTransactions.map(tx => ({
             q: `INSERT OR IGNORE INTO transactions (
                 block_number,
@@ -75,6 +76,7 @@ async function main(params) {
             ]
         }));
 
+        // Skip DB call if no valid transactions found
         if (sqlStatements.length === 0) {
             return {
                 message: 'No valid transactions to process',
@@ -82,7 +84,7 @@ async function main(params) {
             };
         }
 
-        // Configure the request
+        // Prepare Turso DB request
         const requestBody = { statements: sqlStatements };
         const headers = {
             'Authorization': `Bearer ${TURSO_AUTH_TOKEN}`,
@@ -91,7 +93,7 @@ async function main(params) {
 
         console.log(`Attempting to process ${sqlStatements.length} transactions from block ${data.block}`);
 
-        // Make the request to Turso
+        // Execute batch insert to Turso DB
         const response = await axios.post(`${TURSO_URL}`, requestBody, { headers });
 
         return {

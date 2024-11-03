@@ -1,17 +1,17 @@
 async function main(params) {
-    // Import required packages
+    // External libraries for HTTP requests and date formatting
     const axios = require('axios');
     const dateFns = require('date-fns');
   
-    // Turso credentials
-    const TURSO_URL = 'libsql://gasguardian-rofergon.turso.io';
-    const TURSO_AUTH_TOKEN = 'eyJhbGciOiJFZERTQSIsInR5cCI6IkpXVCJ9...';
+    // Database connection credentials for Turso
+    const TURSO_URL = 'url here';
+    const TURSO_AUTH_TOKEN = 'token here';
   
     try {
         // Authentication token log (optional, be careful with security)
         console.log('TURSO_AUTH_TOKEN:', TURSO_AUTH_TOKEN);
   
-        // Try to extract data from different possible properties
+        // Process blockchain data from various possible input sources
         const data = params.data || params.body || params.event || params;
   
         // Log extracted data
@@ -22,22 +22,26 @@ async function main(params) {
             throw new Error('Incomplete data in payload');
         }
   
-        // Extract and process required values
+        // Extract core block information and format timestamp
         const block_number = data.blockInfo.number;
         const block_hash = data.blockInfo.hash;
         const timestamp = data.blockInfo.timestamp;
   
+        // Convert timestamp to standardized format (YYYY-MM-DD HH:mm:ss)
         const parsedTimestamp = new Date(timestamp);
         const formattedTimestamp = dateFns.format(parsedTimestamp, 'yyyy-MM-dd HH:mm:ss');
   
+        // Extract gas-related metrics and convert to appropriate number types
         const base_fee_gwei = parseFloat(data.gasMetrics.baseFeeGwei);
         const gas_limit = data.gasMetrics.gasLimit;
         const gas_used = data.gasMetrics.gasUsed;
         const utilization_percent = parseFloat(data.gasMetrics.utilizationPercent);
   
+        // Network status indicators for blockchain congestion
         const network_congestion = data.networkStatus.congestion;
         const network_trend = data.networkStatus.trend;
   
+        // Transaction statistics with fallback values for optional fields
         const avg_gas_price = parseFloat(data.transactionStats.avgGasPrice);
         const median_gas_price = parseFloat(data.transactionStats.medianGasPrice);
         const avg_priority_fee = data.transactionStats.priorityFeesStats
@@ -51,13 +55,14 @@ async function main(params) {
         const legacy_transactions = data.transactionStats.types.legacy || 0;
         const total_value_transferred = parseFloat(data.transactionStats.totalValueTransferred);
   
-        // Build SQL statement and parameters
+        // Prepare SQL query for inserting block data into database
         const sql = `INSERT INTO block_data (
             block_number, block_hash, timestamp, base_fee_gwei, gas_limit, gas_used, utilization_percent,
             network_congestion, network_trend, avg_gas_price, median_gas_price, avg_priority_fee,
             median_priority_fee, total_transactions, eip1559_transactions, legacy_transactions, total_value_transferred
         ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`;
   
+        // Create array of values matching SQL parameters order
         const paramsArray = [
             block_number,
             block_hash,
@@ -78,8 +83,9 @@ async function main(params) {
             total_value_transferred
         ];
   
-        // Build request body
+        // Format request for Turso database API
         const requestBody = {
+            statements: [{
             statements: [
                 {
                     q: sql,
