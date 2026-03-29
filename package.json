@@ -5,13 +5,18 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
+    "dev:api": "tsx scripts/devApiServer.ts",
+    "dev:web": "vite",
+    "dev:local": "concurrently \"npm:dev:api\" \"npm:dev:web\"",
     "build": "vite build",
     "lint": "eslint .",
     "preview": "vite preview",
     "init-db": "tsx scripts/initDb.ts",
     "delete-invalid-gas": "tsx scripts/deleteInvalidGasData.ts",
     "init-alerts-db": "tsx scripts/initAlertsTables.ts",
-    "list-models": "tsx scripts/listModels.ts"
+    "list-models": "tsx scripts/listModels.ts",
+    "worker": "tsx scripts/ingestBlocks.ts",
+    "validate-fixture": "tsx scripts/validateFixture.ts"
   },
   "dependencies": {
     "@emotion/react": "^11.13.3",
@@ -54,6 +59,7 @@
     "@types/react-dom": "^18.3.0",
     "@vitejs/plugin-react": "^4.3.1",
     "autoprefixer": "^10.4.18",
+    "concurrently": "^9.1.2",
     "dotenv": "^16.4.5",
     "eslint": "^9.9.1",
     "eslint-plugin-react-hooks": "^5.1.0-rc.0",

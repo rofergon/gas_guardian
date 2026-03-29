@@ -92,7 +92,9 @@ const ContractAnalysis: React.FC = () => {
     }
 
     try {
-      const provider = new ethers.JsonRpcProvider(import.meta.env.VITE_QUICKNODE_HTTP_URL);
+      const rpcUrl =
+        import.meta.env.VITE_RPC_HTTP_URL || import.meta.env.VITE_QUICKNODE_HTTP_URL;
+      const provider = new ethers.JsonRpcProvider(rpcUrl);
       
       
       const gasEstimate = await provider.estimateGas({

@@ -85,7 +85,6 @@ async function main(params) {
   
         // Format request for Turso database API
         const requestBody = {
-            statements: [{
             statements: [
                 {
                     q: sql,

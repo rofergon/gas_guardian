@@ -1,39 +1,40 @@
-import { db } from '../lib/db';
+import { apiRequest } from '../lib/api';
 import { GasAlert, AlertNotification } from '../types/Alert';
 
 export const alertService = {
   async createAlert(alert: Omit<GasAlert, 'id' | 'createdAt'>) {
-    const result = await db.execute({
-      sql: `INSERT INTO gas_alerts (name, threshold, type, enabled)
-            VALUES (?, ?, ?, ?)
-            RETURNING id`,
-      args: [alert.name, alert.threshold, alert.type, alert.enabled ? 1 : 0]
+    const response = await apiRequest<{
+      alert: Omit<GasAlert, 'createdAt' | 'lastTriggered'> & {
+        createdAt: string;
+        lastTriggered?: string;
+      };
+    }>('/alerts', {
+      method: 'POST',
+      body: JSON.stringify(alert),
     });
-    
-    return result.rows[0].id as string;
+
+    return response.alert.id;
   },
 
   async getAlerts(): Promise<GasAlert[]> {
-    const result = await db.execute({
-      sql: `SELECT * FROM gas_alerts ORDER BY created_at DESC`,
-      args: []
-    });
+    const response = await apiRequest<{
+      alerts: Array<Omit<GasAlert, 'createdAt' | 'lastTriggered'> & {
+        createdAt: string;
+        lastTriggered?: string;
+      }>;
+    }>('/alerts');
 
-    return result.rows.map(row => ({
-      id: row.id as string,
-      name: row.name as string,
-      enabled: Boolean(row.enabled),
-      threshold: Number(row.threshold),
-      type: row.type as 'below' | 'above',
-      createdAt: new Date(row.created_at as string),
-      lastTriggered: row.last_triggered ? new Date(row.last_triggered as string) : undefined
+    return response.alerts.map((alert) => ({
+      ...alert,
+      createdAt: new Date(alert.createdAt),
+      lastTriggered: alert.lastTriggered ? new Date(alert.lastTriggered) : undefined,
     }));
   },
 
   async toggleAlert(id: string, enabled: boolean) {
-    await db.execute({
-      sql: `UPDATE gas_alerts SET enabled = ? WHERE id = ?`,
-      args: [enabled ? 1 : 0, id]
+    await apiRequest<{ success: boolean }>('/alerts', {
+      method: 'PATCH',
+      body: JSON.stringify({ id, enabled }),
     });
   },
 
@@ -57,11 +58,6 @@ export const alertService = {
         });
         
         triggeredAlerts.push(notification);
-        
-        await db.execute({
-          sql: `UPDATE gas_alerts SET last_triggered = CURRENT_TIMESTAMP WHERE id = ?`,
-          args: [alert.id]
-        });
       }
     }
 
@@ -69,28 +65,13 @@ export const alertService = {
   },
 
   async createNotification(notification: Omit<AlertNotification, 'id'>): Promise<AlertNotification> {
-    const result = await db.execute({
-      sql: `INSERT INTO alert_notifications (alert_id, message, timestamp, read)
-            VALUES (?, ?, ?, ?)
-            RETURNING id`,
-      args: [
-        notification.alertId,
-        notification.message,
-        notification.timestamp.toISOString(),
-        notification.read ? 1 : 0
-      ]
-    });
-
     return {
-      id: result.rows[0].id as string,
+      id: crypto.randomUUID(),
       ...notification
     };
   },
 
   async deleteAlert(id: string) {
-    await db.execute({
-      sql: `DELETE FROM gas_alerts WHERE id = ?`,
-      args: [id]
-    });
+    await apiRequest<{ success: boolean }>('/alerts', { method: 'DELETE' }, { id });
   }
 };

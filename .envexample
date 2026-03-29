@@ -1,4 +1,10 @@
-VITE_QUICKNODE_HTTP_URL=your api key here
-VITE_TURSO_URL=libsql:your url  here
-VITE_TURSO_AUTH_TOKEN= your token key here
-VITE_OPENAI_API_KEY= your api key here
+VITE_RPC_HTTP_URL=https://ethereum-rpc.publicnode.com
+VITE_API_BASE_URL=
+RPC_URLS=https://ethereum-rpc.publicnode.com,https://cloudflare-eth.com
+TURSO_URL=libsql://your-database-url-here
+TURSO_AUTH_TOKEN=your-turso-token-here
+START_BLOCK=21095834
+WHALE_MIN_ETH=0.5
+POLL_INTERVAL_MS=12000
+CATCHUP_DELAY_MS=350
+VITE_OPENAI_API_KEY=your-openai-api-key-here
