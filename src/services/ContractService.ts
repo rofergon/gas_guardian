@@ -12,9 +12,7 @@ export class ContractService {
   private contracts: SmartContract[] = [];
 
   constructor() {
-    const rpcUrl =
-      import.meta.env.VITE_RPC_HTTP_URL || import.meta.env.VITE_QUICKNODE_HTTP_URL;
-    this.provider = new ethers.JsonRpcProvider(rpcUrl);
+    this.provider = new ethers.JsonRpcProvider(import.meta.env.VITE_RPC_HTTP_URL);
     
     // Contrato por defecto
     this.contracts.push({

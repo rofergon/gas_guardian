@@ -3,7 +3,6 @@
 interface ImportMetaEnv {
   readonly VITE_RPC_HTTP_URL: string;
   readonly VITE_API_BASE_URL?: string;
-  readonly VITE_QUICKNODE_HTTP_URL?: string;
   readonly VITE_OPENAI_API_KEY?: string;
 }
 
